@@ -2,11 +2,9 @@ import { staticMapUrl } from 'static-google-map';
 import dotenv from "dotenv";
 import axios from 'axios';
 
-import { Coordinates } from '../models/coordinates';
-
 dotenv.config();
 
-export async function generateLocationImage(locationInfo: Coordinates) {
+export async function generateLocationImage(locationInfo) {
     const url = staticMapUrl({
         key: process.env.STATIC_MAP_KEY,
         scale: 2,

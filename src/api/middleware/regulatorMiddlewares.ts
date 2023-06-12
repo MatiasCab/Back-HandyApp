@@ -1,5 +1,5 @@
 import { authorizationMiddleware } from "./checkIfAuthenticatedMiddleware";
 
-export function Middelwares(req, res, next) {
+export function middelwares(req, res, next) {
     return authorizationMiddleware(req, res, next);
 }

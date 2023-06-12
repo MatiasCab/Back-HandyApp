@@ -3,12 +3,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from "dotenv";
-import { searchRouter } from './api/routes/searchResults';
-import { localsRouter } from './api/routes/localsRouter';
-import { eventsRouter } from './api/routes/eventsRouter';
 import { authRouter } from './api/routes/authRouter';
-import { userRouter } from './api/routes/userRouter';
-import { chatsRouter } from './api/routes/chatsRouter';
+import { problemsRouter } from './api/routes/problemsRouter';
+import { usersRouter } from './api/routes/usersRouter';
+
 
 dotenv.config();
 
@@ -31,12 +29,9 @@ app.use(express.json({ limit: '20mb' }));
 app.use(morgan('combined'));
 
 // define the routers
-app.use(`${API_URL}/searchResults`, searchRouter);
-app.use(`${API_URL}/locals`, localsRouter);
-app.use(`${API_URL}/events`, eventsRouter);
 app.use(`${API_URL}/auth`, authRouter);
-app.use(`${API_URL}/users`, userRouter);
-app.use(`${API_URL}/chats`, chatsRouter);
+app.use(`${API_URL}/problems`, problemsRouter);
+app.use(`${API_URL}/users`, usersRouter);
 
 const PORT = process.env.PORT || 8080;
 // starting the server
