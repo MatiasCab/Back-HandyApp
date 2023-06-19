@@ -16,7 +16,7 @@ async function generateModel(rows: any, actualUserId: number) {
             email: user[7],
             description: user[9],
             profileImage: "falta",
-            isFriend: actualUserId != user[0] ? user[10] : null,
+            fiendshipStatus: actualUserId != user[0] ? user[10] : null,
             skills: user[11][0].id != null ? user[11] : [],
             friendsAmount: friendsAmount!.toString() 
         };
@@ -41,20 +41,21 @@ function query(onlyOne, actualUser, userRequested?) {
                             U.admission_date,
                             U.description,
                             CASE
-                                WHEN F.accepted IS NOT NULL THEN TRUE
-                                ELSE FALSE
-                            END AS is_friend,
+                                WHEN F.accepted IS NULL THEN 0
+                                WHEN F.accepted IS NOT NULL AND F.accepted = TRUE THEN 1
+                                WHEN ${actualUser} = F.user2_id AND F.accepted = FALSE THEN 2
+                                WHEN ${actualUser} = F.user1_id AND F.accepted = FALSE THEN 3
+                            END AS friendship_status,
                             ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                             FROM users AS U
                             LEFT JOIN friends AS F 
                             ON (U.id = F.user1_id OR U.id = F.user2_id) 
                             AND (${actualUser} = F.user1_id OR ${actualUser} = F.user2_id) 
-                            AND F.accepted = TRUE
                             AND '${actualUser}' <> '${userRequested}'
                             LEFT JOIN user_skills AS S ON U.id = S.user_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
                             ${onlyOne ? `WHERE U.id = ${userRequested}` : `WHERE U.id = U.id`}
-                             GROUP BY U.id, F.accepted;`
+                             GROUP BY U.id, F.accepted, F.user2_id, F.user1_id;`
     return queryStatement;
 }
 
@@ -80,4 +81,12 @@ export async function getUserFriendsAmount(userId) {;
 
     const result = await database.query(queryStatement);
     return result.rows[0][0];
+}
+
+export async function getUserIdByUsername(username: string) {
+    const queryStatement = `SELECT id FROM users WHERE username = '${username}';`;
+    
+    const result = await database.query(queryStatement);
+    console.log(queryStatement,result);
+    return result.rows[0];
 }

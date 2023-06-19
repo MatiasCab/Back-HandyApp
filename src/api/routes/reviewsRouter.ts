@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { authorizationMiddleware } from "../middleware/checkIfAuthenticatedMiddleware";
-import { getUserById, getUsers } from "../controllers/usersController";
+import { createReview } from "../controllers/reviewsController";
 
 
 
 export const reviewsRouter = Router();
 
-reviewsRouter.post('/', authorizationMiddleware, getUsers);
+reviewsRouter.post('/', authorizationMiddleware, createReview);
 
-reviewsRouter.get('/:id', authorizationMiddleware, getUserById);
-
+//SE BORRA Y SE PONE EN PROBLEM

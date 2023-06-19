@@ -44,7 +44,7 @@ export async function selectProblems(actualUserId: number) {;
                             JOIN skills AS L ON S.skill_id = L.id
                             JOIN ubications AS U ON U.id = P.ubication_id
                             GROUP BY P.id,
-                            U.lat, U.lng;`;
+                            U.lat, U.lng;`; //puede ser vista
 
     const result = await database.query(queryStatement);
     console.log(result.rows);
@@ -59,7 +59,7 @@ export async function selectProblemById(problemId: number, actualUserId: number)
                             JOIN ubications AS U ON U.id = P.ubication_id
                             WHERE P.id = ${problemId}
                             GROUP BY P.id,
-                            U.lat, U.lng;`;
+                            U.lat, U.lng;`; //puede ser vista
 
     const result = await database.query(queryStatement);
     console.log(result.rows);

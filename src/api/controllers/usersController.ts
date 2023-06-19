@@ -1,3 +1,4 @@
+import { acceptUserFriendship, createUserFriendship } from "../querys/friendsRequestQuerys";
 import { getAllUsers, selectUserById } from "../querys/getUsersQuerys";
 
 
@@ -22,6 +23,34 @@ export const getUserById = async (req, res) => {
 
         const [user] = await selectUserById(otherUserId, userId);
         res.status(200).send({user});
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+    }
+};
+
+export const sendFriendRequest = async (req, res) => {
+    const { userId } = req.user
+    const otherUserId = req.params.id;
+    try {
+
+        await createUserFriendship(otherUserId, userId);
+        res.status(200).send({ error: false, message: 'Friendship request send!!' });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+    }
+};
+
+export const acceptFriendRequest = async (req, res) => {
+    const { userId } = req.user
+    const otherUserId = req.params.id;
+    try {
+
+        await acceptUserFriendship(otherUserId, userId);
+        res.status(200).send({ error: false, message: 'Friendship request accepted!!' });
 
     } catch (e) {
         console.log(e);

@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { authRouter } from './api/routes/authRouter';
 import { problemsRouter } from './api/routes/problemsRouter';
 import { usersRouter } from './api/routes/usersRouter';
+import { reviewsRouter } from './api/routes/reviewsRouter';
 
 
 dotenv.config();
@@ -32,7 +33,7 @@ app.use(morgan('combined'));
 app.use(`${API_URL}/auth`, authRouter);
 app.use(`${API_URL}/problems`, problemsRouter);
 app.use(`${API_URL}/users`, usersRouter);
-
+app.use(`${API_URL}/reviews`, reviewsRouter);
 const PORT = process.env.PORT || 8080;
 // starting the server
 app.listen(PORT, () => {
