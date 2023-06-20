@@ -31,8 +31,8 @@ async function generateModel(rows: any, actualUserId: number) {
 
 function query(onlyOne, actualUser, userRequested?) {
     const queryStatement = `SELECT U.id,
-                            U.name,
-                            U.cedula,
+                            U.firstname,
+                            U.id_card_number,
                             U.username,
                             U.lastname,
                             U.birthday,
@@ -52,7 +52,7 @@ function query(onlyOne, actualUser, userRequested?) {
                             ON (U.id = F.user1_id OR U.id = F.user2_id) 
                             AND (${actualUser} = F.user1_id OR ${actualUser} = F.user2_id) 
                             AND '${actualUser}' <> '${userRequested}'
-                            LEFT JOIN user_skills AS S ON U.id = S.user_id
+                            LEFT JOIN users_skills AS S ON U.id = S.user_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
                             ${onlyOne ? `WHERE U.id = ${userRequested}` : `WHERE U.id = U.id`}
                              GROUP BY U.id, F.accepted, F.user2_id, F.user1_id;`

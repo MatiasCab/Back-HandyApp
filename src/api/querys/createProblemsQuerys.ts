@@ -3,9 +3,9 @@ import { getDB } from "../services/sqlDatabase";
 const database = getDB();
 
 async function createUbication(lat: number, lng: number) {
-    const queryStatement = `INSERT INTO ubications (lat, lng)
+    const queryStatement = `INSERT INTO locations (lat, lng)
                             SELECT ${lat}, ${lng}
-                            WHERE NOT EXISTS (SELECT 1 FROM ubications WHERE lat = ${lat} AND lng = ${lng});`;
+                            WHERE NOT EXISTS (SELECT 1 FROM locations WHERE lat = ${lat} AND lng = ${lng});`;
     await database.query(queryStatement);
 }
 
@@ -27,7 +27,7 @@ async function deleteProblemSkillsAssociations(problemId: number) {
 async function getUbicationId(lat: number, lng: number) {
     await createUbication(lat, lng);
     const queryStatement = `SELECT id 
-                            FROM ubications AS U
+                            FROM locations AS U
                             WHERE U.lat = ${lat} AND U.lng = ${lng};`;
 
     const result = await database.query(queryStatement);
@@ -37,7 +37,7 @@ async function getUbicationId(lat: number, lng: number) {
 
 export async function createProblem(name: string, image_url: string, description: string, userId: number, lat: number, lng: number, skills: any) {
     const ubicationId = await getUbicationId(lat, lng);
-    const queryStatement = `INSERT INTO problems (name, image_url, description, ubication_id, creator_user_id) 
+    const queryStatement = `INSERT INTO problems (name, image_url, description, location_id, creator_id) 
                             VALUES ('${name}', '${image_url}', '${description}', '${ubicationId}', '${userId}')
                             RETURNING id;`;
     const result = await database.query(queryStatement);
@@ -50,8 +50,8 @@ export async function updateProblem(name: string, image_url: string, description
                             SET name = '${name}',
                                 image_url = '${image_url}',
                                 description = '${description}',
-                                ubication_id = ${ubicationId}
-                            WHERE id = ${problemId} AND creator_user_id = ${userId}
+                                location_id = ${ubicationId}
+                            WHERE id = ${problemId} AND creator_id = ${userId}
                             RETURNING id;`;
     const result = await database.query(queryStatement);
     if (result.rows.length < 1) { return; }

@@ -27,10 +27,10 @@ async function generateModel(rows: any) {
 
 export async function insertReview(description: string, score: number, problemId: number, creatorUserId: number, solverUserName: string) {
     const [reviewedUserId] = await getUserIdByUsername(solverUserName);
-    const queryStatement = `INSERT INTO reviews (description, score, problem_id, creator_user_id, solver_user_ID)
+    const queryStatement = `INSERT INTO reviews (description, score, problem_id, creator_id, solver_user_ID)
                             SELECT '${description}', ${score}, ${problemId}, ${creatorUserId}, ${reviewedUserId}
                             FROM users AS U, problems AS P
-                            WHERE U.id = ${creatorUserId} AND P.creator_user_id = U.id AND P.id = ${problemId}
+                            WHERE U.id = ${creatorUserId} AND P.creator_id = U.id AND P.id = ${problemId}
                             RETURNING *;`;
     const result = await database.query(queryStatement);
     console.log(result.rows);
@@ -47,7 +47,7 @@ export async function selectProblemReviews(problemId: number) {
 }
 
 export async function selectUserReviews(userId: number) {
-    const queryStatement = `SELECT * FROM reviews WHERE solver_user_id = ${userId};`;
+    const queryStatement = `SELECT * FROM reviews WHERE solver_id = ${userId};`;
     
     const result = await database.query(queryStatement);
     console.log("reviews de los problemas", result.rows);

@@ -13,7 +13,7 @@ async function generateModel(rows: any, actualUserId: number) {
           ownerId: problem[2],
           postedDate: problem[3],
           imageURL: problem[4],
-          state: problem[5],
+          status: problem[5],
           resolvedDate: problem[6],
           description: problem[7],
           lat: problem[8],
@@ -38,11 +38,11 @@ async function generateModel(rows: any, actualUserId: number) {
     return problems;
 }
 export async function selectProblems(actualUserId: number) {;
-    const queryStatement = `SELECT P.id, P.name, P.creator_user_id, P.created_at, P.image_url, P.state, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+    const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.image_url, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                             FROM problems AS P
-                            JOIN problem_skills AS S ON P.id = S.problem_id
+                            JOIN problems_skills AS S ON P.id = S.problem_id
                             JOIN skills AS L ON S.skill_id = L.id
-                            JOIN ubications AS U ON U.id = P.ubication_id
+                            JOIN locations AS U ON U.id = P.location_id
                             GROUP BY P.id,
                             U.lat, U.lng;`; //puede ser vista
 
@@ -52,11 +52,11 @@ export async function selectProblems(actualUserId: number) {;
 }
 
 export async function selectProblemById(problemId: number, actualUserId: number) {;
-    const queryStatement = `SELECT P.id, P.name, P.creator_user_id, P.created_at, P.image_url, P.state, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+    const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.image_url, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                             FROM problems AS P
-                            JOIN problem_skills AS S ON P.id = S.problem_id
+                            JOIN problems_skills AS S ON P.id = S.problem_id
                             JOIN skills AS L ON S.skill_id = L.id
-                            JOIN ubications AS U ON U.id = P.ubication_id
+                            JOIN locations AS U ON U.id = P.location_id
                             WHERE P.id = ${problemId}
                             GROUP BY P.id,
                             U.lat, U.lng;`; //puede ser vista
