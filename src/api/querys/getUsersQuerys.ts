@@ -6,7 +6,6 @@ async function generateModel(rows: any, actualUserId: number) {
     const users: any = [];
     for (const user of rows) {
         const friendsAmount = await getUserFriendsAmount(actualUserId);
-        console.log(user);
         let userModel: any = {
             id: user[0],
             name: user[1],
@@ -36,26 +35,26 @@ function query(onlyOne, actualUser, userRequested?) {
                             U.username,
                             U.lastname,
                             U.birthday,
-                            U.referrer_id,
+                            U.referred_id,
                             U.email,
                             U.admission_date,
                             U.description,
                             CASE
                                 WHEN F.accepted IS NULL THEN 0
                                 WHEN F.accepted IS NOT NULL AND F.accepted = TRUE THEN 1
-                                WHEN ${actualUser} = F.user2_id AND F.accepted = FALSE THEN 2
-                                WHEN ${actualUser} = F.user1_id AND F.accepted = FALSE THEN 3
+                                WHEN ${actualUser} = F.receiving_user_id AND F.accepted = FALSE THEN 2
+                                WHEN ${actualUser} = F.requesting_user_id AND F.accepted = FALSE THEN 3
                             END AS friendship_status,
                             ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                             FROM users AS U
                             LEFT JOIN friends AS F 
-                            ON (U.id = F.user1_id OR U.id = F.user2_id) 
-                            AND (${actualUser} = F.user1_id OR ${actualUser} = F.user2_id) 
+                            ON (U.id = F.requesting_user_id OR U.id = F.receiving_user_id) 
+                            AND (${actualUser} = F.requesting_user_id OR ${actualUser} = F.receiving_user_id) 
                             AND '${actualUser}' <> '${userRequested}'
                             LEFT JOIN users_skills AS S ON U.id = S.user_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
                             ${onlyOne ? `WHERE U.id = ${userRequested}` : `WHERE U.id = U.id`}
-                             GROUP BY U.id, F.accepted, F.user2_id, F.user1_id;`
+                             GROUP BY U.id, F.accepted, F.receiving_user_id, F.requesting_user_id;`
     return queryStatement;
 }
 
@@ -63,21 +62,21 @@ export async function selectUserById(userRequested, actualUser) {;
     const queryStatement = query(true, actualUser, userRequested);
 
     const result = await database.query(queryStatement);
-    return await generateModel(result.rows, actualUser);
+    const [userModel] = await generateModel(result.rows, actualUser);
+    return userModel;
 }
 
 export async function getAllUsers(actualUser) {;
     const queryStatement = query(false, actualUser);
 
     const result = await database.query(queryStatement);
-    console.log(result);
     return await generateModel(result.rows, actualUser);
 }
 
 export async function getUserFriendsAmount(userId) {;
     const queryStatement = `SELECT COUNT(F.accepted) AS count 
                             FROM friends AS F
-                            WHERE (F.user1_id = ${userId} OR F.user2_id = ${userId}) AND F.accepted = TRUE;`;
+                            WHERE (F.requesting_user_id = ${userId} OR F.receiving_user_id = ${userId}) AND F.accepted = TRUE;`;
 
     const result = await database.query(queryStatement);
     return result.rows[0][0];

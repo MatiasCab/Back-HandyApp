@@ -11,7 +11,7 @@ async function createUbication(lat: number, lng: number) {
 
 async function createProblemSkillsAssociations(skills: any, problemId: any) {
     for (let index = 0; index < skills.length; index++) {
-        const queryStatement = `INSERT INTO problem_skills (problem_id, skill_id)
+        const queryStatement = `INSERT INTO problems_skills (problem_id, skill_id)
                                 VALUES (${problemId}, ${skills[index]})
                                 ON CONFLICT DO NOTHING;`;
         await database.query(queryStatement);
@@ -37,7 +37,7 @@ async function getUbicationId(lat: number, lng: number) {
 
 export async function createProblem(name: string, image_url: string, description: string, userId: number, lat: number, lng: number, skills: any) {
     const ubicationId = await getUbicationId(lat, lng);
-    const queryStatement = `INSERT INTO problems (name, image_url, description, location_id, creator_id) 
+    const queryStatement = `INSERT INTO problems (name, picture_name, description, location_id, creator_id) 
                             VALUES ('${name}', '${image_url}', '${description}', '${ubicationId}', '${userId}')
                             RETURNING id;`;
     const result = await database.query(queryStatement);

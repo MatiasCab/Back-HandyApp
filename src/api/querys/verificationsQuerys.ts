@@ -39,6 +39,7 @@ export async function existVerificationCode(verificationCode: string) {
                              FROM non_verified_users AS U
                              WHERE U.verify_code = ${verificationCode};`;
     const result = await database.query(queryStatement);
+    console.log("CERORORORO",result);
     if(result.rows.length == 0) { return; }
     return result.rows[0];
 }

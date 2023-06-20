@@ -6,7 +6,7 @@ const database = getDB();
 async function generateModel(rows: any) {
     const reviews: any = [];
     for (const review of rows) {
-        const [reviewedUser] = await selectUserById(review[5], 9);
+        const reviewedUser = await selectUserById(review[5], 9);
         let reviewModel: any = {
             id: review[0],
             description: review[1],
@@ -27,7 +27,7 @@ async function generateModel(rows: any) {
 
 export async function insertReview(description: string, score: number, problemId: number, creatorUserId: number, solverUserName: string) {
     const [reviewedUserId] = await getUserIdByUsername(solverUserName);
-    const queryStatement = `INSERT INTO reviews (description, score, problem_id, creator_id, solver_user_ID)
+    const queryStatement = `INSERT INTO reviews (description, score, problem_id, creator_id, solver_id)
                             SELECT '${description}', ${score}, ${problemId}, ${creatorUserId}, ${reviewedUserId}
                             FROM users AS U, problems AS P
                             WHERE U.id = ${creatorUserId} AND P.creator_id = U.id AND P.id = ${problemId}
