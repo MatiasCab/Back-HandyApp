@@ -7,8 +7,8 @@ export const createReview = async (req, res) => {
     const { userId } = req.user
     try {
 
-        const users = await insertReview(description, score, problemId, userId, solverUsername);
-        res.status(200).send({users});
+        const review = await insertReview(description, score, problemId, userId, solverUsername);
+        res.status(200).send({review});
 
     } catch (e) {
         console.log(e);

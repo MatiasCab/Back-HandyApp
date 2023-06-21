@@ -17,23 +17,24 @@ function generateHashedPassword(password: string) {
 }
 
 export const addUserToVerify = async (req: Request, res: Response) => {
-    const { username, name, lastname, email, password, cedula, birthdate, referralCode } = req.body;
+    const { username, name, lastname, email, password, CI, birthdate, referredCode } = req.body;
+    console.log(req.body)
     
     try {
-        if (!username || !name || !lastname || !email || !password || !birthdate || !cedula || !referralCode) {
+        if (!username || !name || !lastname || !email || !password || !birthdate || !CI || !referredCode) {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
 
-        const exist = await existReferralCode(referralCode);
+        const exist = await existReferralCode(referredCode);
         if (!exist) {
             res.status(400).send({ error: true, message: 'Referral code is invalid.', name: "InvalidReferralCode"});
             return;
         }
         
-        const existCredentianls = await existUserVerifiedOrUnverified(email, username, cedula);
+        const existCredentianls = await existUserVerifiedOrUnverified(email, username, CI);
         if (existCredentianls) {
-            res.status(400).send({ error: true, message: `Already exists a user with the email: ${email}, username: ${username} or cedula: ${cedula}`, name: 'CredentialsAlredyExistsError' });
+            res.status(400).send({ error: true, message: `Already exists a user with the email: ${email}, username: ${username} or cedula: ${CI}`, name: 'CredentialsAlredyExistsError' });
             return;
         }
 
@@ -44,7 +45,7 @@ export const addUserToVerify = async (req: Request, res: Response) => {
         }
 
         const hashedPassword = generateHashedPassword(password);
-        await insertUserToVerify(cedula, username, name, lastname, birthdate, referralCode, email, hashedPassword, verificationCode);
+        await insertUserToVerify(CI, username, name, lastname, birthdate, referredCode, email, hashedPassword, verificationCode);
 
         res.status(200).send({ error: false, message: "Verification code send." });
 
