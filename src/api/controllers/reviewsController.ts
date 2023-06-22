@@ -33,8 +33,8 @@ export const getUserReviews = async (req, res) => {
     const userId = req.params.id;
     try {
 
-        const reviews = await selectUserReviews(userId);
-        res.status(200).send({reviews});
+        const reviewsInfo = await selectUserReviews(userId);
+        res.status(200).send({reviewsInfo});
 
     } catch (e) {
         console.log(e);

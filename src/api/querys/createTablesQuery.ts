@@ -102,10 +102,6 @@ async function createReviewsTable() {
                             description VARCHAR(400) NOT NULL,
                             score INT NOT NULL CHECK (score > 0 AND score < 4),
                             problem_id INT NOT NULL,
-                            creator_id INT NOT NULL,
-                            solver_id INT NOT NULL,
-                            FOREIGN KEY (creator_id) REFERENCES users (id),
-                            FOREIGN KEY (solver_id) REFERENCES users (id),
                             FOREIGN KEY (problem_id) REFERENCES problems (id)
                         );`;
                                             
