@@ -51,7 +51,7 @@ async function createNonVerifiedUsersTable() {
                             FOREIGN KEY (referral_code) REFERENCES users (referral_code)
                         );`;
                         
-    await database.query(queryStatement);
+    await database.query(queryStatement)
 }
 
 async function createFriendsTable() {
@@ -96,6 +96,22 @@ async function createProblemsTable() {
     await database.query(queryStatement);
 }
 
+async function createReviewsTable() {
+    const queryStatement = `CREATE TABLE IF NOT EXISTS "reviews" (
+                            id SERIAL PRIMARY KEY,
+                            description VARCHAR(400) NOT NULL,
+                            score INT NOT NULL CHECK (score > 0 AND score < 4),
+                            problem_id INT NOT NULL,
+                            creator_id INT NOT NULL,
+                            solver_id INT NOT NULL,
+                            FOREIGN KEY (creator_id) REFERENCES users (id),
+                            FOREIGN KEY (solver_id) REFERENCES users (id),
+                            FOREIGN KEY (problem_id) REFERENCES problems (id)
+                        );`;
+                                            
+    await database.query(queryStatement);
+}
+
 async function createUsersSkillsTable() {
     const queryStatement = `CREATE TABLE IF NOT EXISTS "users_skills" (
                             id SERIAL PRIMARY KEY,
@@ -129,6 +145,7 @@ export async function generateBDTables(){
     await createFriendsTable();
     await createSkillsTable();
     await createProblemsTable();
+    await createReviewsTable()
     await createUsersSkillsTable();
     await createProblemsSkillsTable();
 }
