@@ -9,6 +9,8 @@ import { insertUserToVerify, insertUserVerified } from "../querys/createUsersQue
 
 const EXPIRE_TOKEN = 60 * 60;
 
+//TODO ARREGLAR ERRORS RESPONSE
+
 
 function generateHashedPassword(password: string) {
     const salt = bcrypt.genSaltSync(10);

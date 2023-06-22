@@ -1,6 +1,7 @@
 import { createProblem, updateProblem } from "../querys/createProblemsQuerys";
 import { selectProblemById, selectProblems } from "../querys/getProblemsQuery";
 
+//TODO ARREGLAR ERRORS RESPONSE
 
 export const createProblems = async (req, res) => {
     const { name, image, description, lat, lng, skills } = req.body;

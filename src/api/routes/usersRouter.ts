@@ -11,6 +11,8 @@ usersRouter.get('/', authorizationMiddleware, getUsers);
 
 usersRouter.get('/:id', authorizationMiddleware, getUserById);
 
+usersRouter.put('/', authorizationMiddleware, getUserById);
+
 usersRouter.get('/:id/reviews', authorizationMiddleware, getUserReviews);
 
 usersRouter.put('/:id/friend-requests/accept', authorizationMiddleware, acceptFriendRequest);

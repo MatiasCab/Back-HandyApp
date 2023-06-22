@@ -1,7 +1,8 @@
+import { updateUser } from "../querys/createUsersQuerys";
 import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQuerys";
 import { getAllUsers, selectUserById } from "../querys/getUsersQuerys";
 
-
+//TODO ARREGLAR ERRORS RESPONSE
 
 export const getUsers = async (req, res) => {
     const { userId } = req.user
@@ -40,7 +41,7 @@ export const sendFriendRequest = async (req, res) => {
 
     } catch (e) {
         console.log(e);
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error sending friend request", name: 'ServerError' });
     }
 };
 
@@ -54,7 +55,7 @@ export const acceptFriendRequest = async (req, res) => {
 
     } catch (e) {
         console.log(e);
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error accepting userfrienship", name: 'ServerError' });
     }
 };
 
@@ -68,6 +69,25 @@ export const deleteFriendship = async (req, res) => {
 
     } catch (e) {
         console.log(e);
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error deleting user friendship", name: 'ServerError' });
+    }
+};
+
+export const updateUserInfo = async (req, res) => {
+    const { imageName, description, lat, lng, skills } = req.body;
+    const { userId } = req.user;
+    try {
+
+        if (!imageName || !description || !lat || !lng || !skills) {
+            res.status(400).send({ error: true, message: 'Fields cannot be null' });
+            return;
+        } 
+
+        await updateUser(imageName, description, lat, lng, skills, userId);
+        res.status(200).send({ error: false, message: 'User updated!!' });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: true, message: "Internal server error updating user", name: 'ServerError' });
     }
 };

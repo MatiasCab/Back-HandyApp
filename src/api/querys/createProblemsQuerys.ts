@@ -19,12 +19,13 @@ async function createProblemSkillsAssociations(skills: any, problemId: any) {
 }
 
 async function deleteProblemSkillsAssociations(problemId: number) {
-    const queryStatement = `DELETE FROM problem_skills AS S
+    const queryStatement = `DELETE FROM problems_skills AS S
                             WHERE S.problem_id = ${problemId};`;
     await database.query(queryStatement);
 }
 
-async function getUbicationId(lat: number, lng: number) {
+//TODO ponerlo como helper
+export async function getUbicationId(lat: number, lng: number) {
     await createUbication(lat, lng);
     const queryStatement = `SELECT id 
                             FROM locations AS U
@@ -44,11 +45,12 @@ export async function createProblem(name: string, image_url: string, description
     await createProblemSkillsAssociations(skills, result.rows[0][0]);
 }
 
+//TODO cambiar nombres por convencion
 export async function updateProblem(name: string, image_url: string, description: string, lat: number, lng: number, skills: any, problemId: number, userId: number) {
     const ubicationId = await getUbicationId(lat, lng);
     const queryStatement = `UPDATE problems
                             SET name = '${name}',
-                                image_url = '${image_url}',
+                                picture_name = '${image_url}',
                                 description = '${description}',
                                 location_id = ${ubicationId}
                             WHERE id = ${problemId} AND creator_id = ${userId}

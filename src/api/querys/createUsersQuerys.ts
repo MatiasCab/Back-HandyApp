@@ -1,5 +1,6 @@
 import { dateFormater } from "../helpers/utils";
 import { getDB } from "../services/sqlDatabase";
+import { getUbicationId } from "./createProblemsQuerys";
 import { existReferralCode, existVerificationCode } from "./verificationsQuerys";
 
 const database = getDB();
@@ -12,6 +13,20 @@ async function generateReferralCode() {
             return code;
         }
     };
+}
+
+async function createUserSkillsAssociations(skills: any, userId: any) {
+    for (let index = 0; index < skills.length; index++) {
+        const queryStatement = `INSERT INTO users_skills (user_id, skill_id)
+                                VALUES (${userId}, ${skills[index]})
+                                ON CONFLICT DO NOTHING;`;
+        await database.query(queryStatement);
+    }
+}
+async function deleteUserSkillsAssociations(userId: number) {
+    const queryStatement = `DELETE FROM users_skills AS S
+                            WHERE S.user_id = ${userId};`;
+    await database.query(queryStatement);
 }
 
 async function deleteUnverifiedUser(verificationCode: string) {
@@ -52,4 +67,18 @@ export async function insertUserVerified(verificationCode: string) {
     await database.query(queryStatement);
     await updateReferrerID(verificationCode);
     await deleteUnverifiedUser(verificationCode);
+}
+
+export async function updateUser(pictureName: string, description: string, lat: number, lng: number, skills: any, userId: number) {
+    const ubicationId = await getUbicationId(lat, lng);
+    const queryStatement = `UPDATE users
+                            SET profile_picture_name = '${pictureName}',
+                                description = '${description}',
+                                location_id = ${ubicationId}
+                            WHERE id = ${userId}
+                            RETURNING id;`;
+    const result = await database.query(queryStatement);
+    if (result.rows.length < 1) { return; }
+    await deleteUserSkillsAssociations(userId);
+    await createUserSkillsAssociations(skills, userId);
 }
