@@ -46,8 +46,47 @@ async function createSkillsMock(){
 }
 
 
+async function createProblemsMock(){
+    const queryStatement = `INSERT INTO problems (id, name, description, picture_name, location_id, creator_id)
+                            VALUES
+                                (1, 'Problema 1', 'Descripción del problema 1', 'picture1.jpg', 1, 2),
+                                (2, 'Problema 2', 'Descripción del problema 2', 'picture2.jpg', 1, 2),
+                                (3, 'Problema 3', 'Descripción del problema 3', 'picture3.jpg', 1, 2),
+                                (4, 'Problema 4', 'Descripción del problema 4', 'picture4.jpg', 1, 2),
+                                (5, 'Problema 5', 'Descripción del problema 5', 'picture5.jpg', 1, 2),
+                                (6, 'Problema 6', 'Descripción del problema 6', 'picture6.jpg', 1, 2),
+                                (7, 'Problema 7', 'Descripción del problema 7', 'picture7.jpg', 1, 2),
+                                (8, 'Problema 8', 'Descripción del problema 8', 'picture8.jpg', 1, 2),
+                                (9, 'Problema 9', 'Descripción del problema 9', 'picture9.jpg', 1, 2),
+                                (10, 'Problema 10', 'Descripción del problema 10', 'picture10.jpg', 1, 2)
+                                ON CONFLICT DO NOTHING;`;
+
+    await database.query(queryStatement);
+    await createProblemsSkillsSociationsMock();
+}
+
+async function createProblemsSkillsSociationsMock(){
+    const queryStatement = `INSERT INTO problems_skills (problem_id, skill_id)
+                            VALUES
+                                (1, 1), (1, 2), (1, 3),
+                                (2, 4), (2, 5),
+                                (3, 6), (3, 7), (3, 8),
+                                (4, 9),
+                                (5, 10), (5, 11), (5, 12),
+                                (6, 13), (6, 14),
+                                (7, 15), (7, 16), (7, 17),
+                                (8, 18),
+                                (9, 19), (9, 20),
+                                (10, 1), (10, 2), (10, 3), (10, 4), (10, 5)
+                                ON CONFLICT DO NOTHING;`;
+
+    await database.query(queryStatement);
+}
+
+
 export async function generateMockedData(){
     await createLocationsMock();
     await createUsersMock();
     await createSkillsMock();
+    await createProblemsMock();
 }

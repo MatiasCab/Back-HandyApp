@@ -56,7 +56,7 @@ export const addUserToVerify = async (req: Request, res: Response) => {
 
 export const userVerification = async (req, res) => {
     const { verificationCode } = req.body;
-    
+    console.log("cadoifo", req.body);
 
     try {
         if (!verificationCode || verificationCode.toString().length < 5) {
