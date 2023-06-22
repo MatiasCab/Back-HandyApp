@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authorizationMiddleware } from "../middleware/checkIfAuthenticatedMiddleware";
-import { acceptFriendRequest, deleteFriendship, getUserById, getUsers, sendFriendRequest } from "../controllers/usersController";
+import { acceptFriendRequest, deleteFriendship, getUserById, getUsers, sendFriendRequest, updateUserInfo } from "../controllers/usersController";
 import { getUserReviews } from "../controllers/reviewsController";
 
 
@@ -11,7 +11,7 @@ usersRouter.get('/', authorizationMiddleware, getUsers);
 
 usersRouter.get('/:id', authorizationMiddleware, getUserById);
 
-usersRouter.put('/', authorizationMiddleware, getUserById);
+usersRouter.put('/', authorizationMiddleware, updateUserInfo);
 
 usersRouter.get('/:id/reviews', authorizationMiddleware, getUserReviews);
 

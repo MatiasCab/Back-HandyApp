@@ -6,6 +6,7 @@ async function createUbication(lat: number, lng: number) {
     const queryStatement = `INSERT INTO locations (lat, lng)
                             SELECT ${lat}, ${lng}
                             WHERE NOT EXISTS (SELECT 1 FROM locations WHERE lat = ${lat} AND lng = ${lng});`;
+    console.log(queryStatement);
     await database.query(queryStatement);
 }
 
@@ -41,6 +42,7 @@ export async function createProblem(name: string, image_url: string, description
     const queryStatement = `INSERT INTO problems (name, picture_name, description, location_id, creator_id) 
                             VALUES ('${name}', '${image_url}', '${description}', '${ubicationId}', '${userId}')
                             RETURNING id;`;
+    console.log(queryStatement);
     const result = await database.query(queryStatement);
     await createProblemSkillsAssociations(skills, result.rows[0][0]);
 }

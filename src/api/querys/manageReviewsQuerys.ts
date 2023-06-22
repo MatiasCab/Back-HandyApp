@@ -50,9 +50,17 @@ async function generateModel(rows: any, withFullInfo) {
 
 export async function insertReview(description: string, score: number, problemId: number, creatorUserId: number, solverUserName: string) {
     const [reviewedUserId] = await getUserIdByUsername(solverUserName);
-    const queryStatement = `INSERT INTO reviews (description, score, problem_id, creator_id, solver_id)
-                            SELECT '${description}', ${score}, ${problemId}, ${creatorUserId}, ${reviewedUserId}
-                            FROM users AS U, problems AS P-/+
+    const queryStatement = `WITH updated_problem AS (
+                                UPDATE problems
+                                SET status = 'CLOSED',
+                                    solver_id =  ${reviewedUserId},
+                                    resolved_date = CURRENT_TIMESTAMP
+                                WHERE id = ${problemId} AND creator_id = ${creatorUserId}
+                                RETURNING *
+                            )
+                            INSERT INTO reviews (description, score, problem_id)
+                            SELECT '${description}', ${score}, ${problemId}
+                            FROM users AS U, problems AS P
                             WHERE U.id = ${creatorUserId} AND P.creator_id = U.id AND P.id = ${problemId}
                             RETURNING *;`;
     const result = await database.query(queryStatement);
@@ -60,6 +68,7 @@ export async function insertReview(description: string, score: number, problemId
     return review
 }
 
+//TODO REDURCIR ESTO
 export async function selectProblemReviews(problemId: number) {
     const queryStatement = ` SELECT R.id,
                                     R.description,
