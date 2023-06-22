@@ -63,8 +63,9 @@ export async function insertReview(description: string, score: number, problemId
                             FROM users AS U, problems AS P
                             WHERE U.id = ${creatorUserId} AND P.creator_id = U.id AND P.id = ${problemId}
                             RETURNING *;`;
+    console.log(queryStatement);
     const result = await database.query(queryStatement);
-    const [review] = await generateModel(result.rows, true);
+    const [review] = await generateModel(result.rows, false);
     return review
 }
 
