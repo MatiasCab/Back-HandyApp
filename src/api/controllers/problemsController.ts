@@ -1,8 +1,10 @@
 import { generateFilters } from "../helpers/generateFiltersHelper";
+import { uploadBase64Image } from "../helpers/imagesHelper";
 import { createProblem, updateProblem } from "../querys/createProblemsQuerys";
 import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQuery";
 
 //TODO ARREGLAR ERRORS RESPONSE
+//TODO CONSULTAR EL TEMA DE LAS IMAGENES, SI LES PARECE BIEN QUE NO SE BORREN EN EL BUCKET O SI HAY QUE BORRARLAS-
 
 export const createProblems = async (req, res) => {
     const { name, image, description, lat, lng, skills } = req.body;
@@ -14,7 +16,10 @@ export const createProblems = async (req, res) => {
             return;
         } 
 
-        await createProblem(name, image, description, userId, lat, lng, skills);
+        const imageName = `problem_${Date.now()}.jpg`;
+        await uploadBase64Image(image, imageName);
+
+        await createProblem(name, imageName, description, userId, lat, lng, skills);
         res.status(200).send({ error: false, message: 'Problem created!!' });
 
     } catch (e) {
@@ -29,12 +34,18 @@ export const updateProblems = async (req, res) => {
     const {userId} = req.user;
     try {
 
-        if (!name || !image || !description || !lat || !lng || !skills) {
+        if (!name || !description || !lat || !lng || !skills) {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
 
-        await updateProblem(name, image, description, lat, lng, skills, problemsId, userId)
+        let imageName: any = undefined;
+        if (image) {
+            imageName = `problem_${Date.now()}.jpg`;
+            await uploadBase64Image(image, imageName);
+        }
+
+        await updateProblem(name, imageName, description, lat, lng, skills, problemsId, userId)
         res.status(200).send({ error: false, message: 'Problem updated!!' });
 
     } catch (e) {

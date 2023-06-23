@@ -1,8 +1,7 @@
 import { staticMapUrl } from 'static-google-map';
 import dotenv from "dotenv";
 import axios from 'axios';
-import * as fs from 'fs';
-import { getImageURL, uploadImage } from './imagesHelper';
+import { getImageURL, uploadBase64Image } from './imagesHelper';
 
 dotenv.config();
 
@@ -33,11 +32,7 @@ export async function generateLocationImage(lat, lng) {
         responseEncoding: 'base64'
     });
 
-    const buffer = Buffer.from(response.data, 'base64');
-    fs.writeFileSync('imagen.jpg', response.data);
-    return await uploadImage(buffer, `${lat},${lng}.jpg`)
-    //console.log(response.data)
-    //return response.data;
+    await uploadBase64Image(response.data, `${lat},${lng}.jpg`);
 }
 
 export async function getLocationImage(lat, lng) {
@@ -46,6 +41,7 @@ export async function getLocationImage(lat, lng) {
     if(imageInfo){
         return imageInfo.imageURL;
     };
-    imageInfo = await generateLocationImage(lat, lng);
+    await generateLocationImage(lat, lng);
+    imageInfo = await getImageURL(imageName)
     return imageInfo?.imageURL;
 }

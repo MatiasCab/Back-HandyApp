@@ -37,22 +37,23 @@ export async function getUbicationId(lat: number, lng: number) {
 }
 
 
-export async function createProblem(name: string, image_url: string, description: string, userId: number, lat: number, lng: number, skills: any) {
+export async function createProblem(name: string, imageName: string, description: string, userId: number, lat: number, lng: number, skills: any) {
     const ubicationId = await getUbicationId(lat, lng);
     const queryStatement = `INSERT INTO problems (name, picture_name, description, location_id, creator_id) 
-                            VALUES ('${name}', '${image_url}', '${description}', '${ubicationId}', '${userId}')
+                            VALUES ('${name}', '${imageName}', '${description}', '${ubicationId}', '${userId}')
                             RETURNING id;`;
     console.log(queryStatement);
     const result = await database.query(queryStatement);
     await createProblemSkillsAssociations(skills, result.rows[0][0]);
 }
 
-//TODO cambiar nombres por convencion
-export async function updateProblem(name: string, image_url: string, description: string, lat: number, lng: number, skills: any, problemId: number, userId: number) {
+//TODO fijarse si funciona con el tema de la imagen
+export async function updateProblem(name: string, description: string, lat: number, lng: number, skills: any, problemId: number, userId: number,  imageName?: string) {
     const ubicationId = await getUbicationId(lat, lng);
+    const updatedImageName = imageName ? imageName : 'picture_name';
     const queryStatement = `UPDATE problems
                             SET name = '${name}',
-                                picture_name = '${image_url}',
+                                picture_name = '${updatedImageName}',
                                 description = '${description}',
                                 location_id = ${ubicationId}
                             WHERE id = ${problemId} AND creator_id = ${userId}

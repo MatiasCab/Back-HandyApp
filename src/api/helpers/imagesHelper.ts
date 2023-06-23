@@ -48,8 +48,9 @@ export async function getImageURL(imageName: string) {
 
 export async function uploadImage(image: Buffer, imageName: string) {
     await getBucket().file(imageName).save(image);
+}
 
-    const imageInfo = await getImageURL(imageName);
-
-    return imageInfo;
+export async function uploadBase64Image(base64Image: string, imageName: string) {
+    const buffer = Buffer.from(base64Image, 'base64');
+    await uploadImage(buffer, imageName);
 }
