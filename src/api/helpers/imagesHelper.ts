@@ -20,26 +20,6 @@ async function generateImageURL(imageName: string){
     return { imageURL: url, expireDate: expireDate };
 }
 
-// export async function regulatorImagesLinks(images: Image[], table: string) {
-//     const msInHour = 1000 * 60 * 60;
-//     for (let image of images) {
-//         if (image.imageLink == null || image.expireDate == null || (new Date(image.expireDate).getTime() - Date.now()) / msInHour <= 5) {
-
-//             let imageURLData = await getImageURL(image.imageName);
-//             const query = `UPDATE ${table}
-//                                 SET 
-//                                     imageLink = '${imageURLData.imageURL}',
-//                                     expireDate = '${dateFormater(new Date(imageURLData.expireDate))}',
-//                                     imageName = '${image.imageName}'
-//                                 WHERE
-//                                     ${table == 'Users' ? `username = "${image.imageName.replace('.jpg', '')}"` : `imageName = "${image.imageName}"`}`
-//             await getDB().query(query);
-//             image.imageLink = imageURLData.imageURL;
-//             image.expireDate = new Date(imageURLData.expireDate);
-//         }
-//     }
-// }
-
 export async function getImageURL(imageName: string) {
     const existImage = await existImageController(imageName);
     if(!existImage) return undefined;
