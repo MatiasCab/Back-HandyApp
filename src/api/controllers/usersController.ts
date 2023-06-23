@@ -1,3 +1,4 @@
+import { uploadBase64Image } from "../helpers/imagesHelper";
 import { updateUser } from "../querys/createUsersQuerys";
 import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQuerys";
 import { getAllUsers, selectUserById } from "../querys/getUsersQuerys";
@@ -79,10 +80,16 @@ export const updateUserInfo = async (req, res) => {
     const { userId } = req.user;
     try {
 
-        if (!image || !description || !lat || !lng || !skills) {
+        if (!description || !lat || !lng || !skills) {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
+
+        let imageName: any = undefined;
+        if (image) {
+            imageName = `problem_${Date.now()}.jpg`;
+            await uploadBase64Image(image, imageName);
+        }
 
         await updateUser(image, description, lat, lng, skills, userId);
         res.status(200).send({ error: false, message: 'User updated!!' });
