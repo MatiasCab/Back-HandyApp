@@ -1,3 +1,4 @@
+import { generateFilters } from "../helpers/generateFiltersHelper";
 import { createProblem, updateProblem } from "../querys/createProblemsQuerys";
 import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQuery";
 
@@ -56,12 +57,12 @@ export const getProblems = async (req, res) => {
 };
 
 export const getUserProblems = async (req, res) => {
+    const { userId } = req.user
     const otherUserId = req.params.id;
     try {
-
-        const problems = await selectUserProblem(otherUserId);
+        const filters = generateFilters(req.query, userId, otherUserId);
+        const problems = await selectUserProblem(otherUserId, filters);
         res.status(200).send({problems});
-
     } catch (e) {
         console.log(e);
         res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });

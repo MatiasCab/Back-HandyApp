@@ -2,6 +2,56 @@ import { getDB } from "../services/sqlDatabase";
 import { selectUserById } from "./getUsersQuerys";
 
 const database = getDB();
+
+function statusFilter(value) {
+  if(value == 'OPEN') return '';
+  return ` AND P.status = '${value}'`;
+}
+
+function nameFilter(value) {
+  if(value == '') return '';
+  return ` AND P.name LIKE '%${value}%'`;
+}
+
+function skillsFilter(value) {
+  let statement = ` AND NOT EXISTS (
+                      SELECT 1
+                      FROM skills AS SK
+                      WHERE SK.name IN (`;
+  let pass = false;
+  value.forEach(skill => {
+    if(!skill.includes("'")) {
+      statement += `'${skill}',`;
+      pass = true;
+    }
+  });
+  if(!pass) return '';
+  statement = statement.slice(0, -1)
+  return statement +  `) AND NOT EXISTS (
+                          SELECT 1
+                          FROM problems_skills AS PS
+                          WHERE PS.problem_id = P.id
+                          AND PS.skill_id = SK.id
+                        )
+                      )`;
+}
+
+function friendsFilter(value, actualUserId) {
+  if(value != 'friends') return '';
+  return ` AND (${actualUserId} = F.requesting_user_id OR ${actualUserId} = F.receiving_user_id)`;
+}
+
+function generateFiltersInProblemQuery(filters: Map<string, string>) {
+  let queryFilteredStatement = '';
+  queryFilteredStatement += statusFilter(filters.get('status'));
+  queryFilteredStatement += nameFilter(filters.get('name'));
+  queryFilteredStatement += skillsFilter(filters.get('skills'));
+  queryFilteredStatement += friendsFilter(filters.get('creator'), filters.get('actualUserId')!); //TODO filtro de amigos.
+
+  console.log(queryFilteredStatement);
+  return queryFilteredStatement;
+}
+
 async function generateModel(rows: any, actualUserId?: number) {
     const problems: any = [];
     for (const problem of rows) {
@@ -55,16 +105,18 @@ export async function selectProblemById(problemId: number, actualUserId: number)
     return await generateModel(result.rows, actualUserId);
 }
 
-export async function selectUserProblem(userId: number) {;
+export async function selectUserProblem(userId: number, filters: Map<string, string>) {;
   const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.picture_name, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                           FROM problems AS P
                           LEFT JOIN problems_skills AS S ON P.id = S.problem_id
                           LEFT JOIN skills AS L ON S.skill_id = L.id
                           JOIN locations AS U ON U.id = P.location_id
-                          WHERE P.creator_id = ${userId}
+                          LEFT JOIN friends AS F ON ((P.creator_id = F.requesting_user_id OR P.creator_id = F.receiving_user_id) AND F.accepted = TRUE)
+                          WHERE P.creator_id = ${userId} ${generateFiltersInProblemQuery(filters)}
                           GROUP BY P.id,
                           U.lat, U.lng;`;
 
+  console.log(queryStatement);
   const result = await database.query(queryStatement);
   return await generateModel(result.rows);
 }
