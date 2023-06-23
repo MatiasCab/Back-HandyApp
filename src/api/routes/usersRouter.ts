@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authorizationMiddleware } from "../middleware/checkIfAuthenticatedMiddleware";
 import { acceptFriendRequest, deleteFriendship, getUserById, getUsers, sendFriendRequest, updateUserInfo } from "../controllers/usersController";
 import { getUserReviews } from "../controllers/reviewsController";
+import { getUserProblems } from "../controllers/problemsController";
 
 
 
@@ -20,3 +21,5 @@ usersRouter.put('/:id/friend-requests/accept', authorizationMiddleware, acceptFr
 usersRouter.post('/:id/friend-requests', authorizationMiddleware, sendFriendRequest);
 
 usersRouter.delete('/:id/friends', authorizationMiddleware, deleteFriendship);
+
+usersRouter.get('/:id/problems', authorizationMiddleware, getUserProblems);

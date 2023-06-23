@@ -1,5 +1,5 @@
 import { createProblem, updateProblem } from "../querys/createProblemsQuerys";
-import { selectProblemById, selectProblems } from "../querys/getProblemsQuery";
+import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQuery";
 
 //TODO ARREGLAR ERRORS RESPONSE
 
@@ -47,6 +47,19 @@ export const getProblems = async (req, res) => {
     try {
 
         const problems = await selectProblems(userId);
+        res.status(200).send({problems});
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+    }
+};
+
+export const getUserProblems = async (req, res) => {
+    const otherUserId = req.params.id;
+    try {
+
+        const problems = await selectUserProblem(otherUserId);
         res.status(200).send({problems});
 
     } catch (e) {

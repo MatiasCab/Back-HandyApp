@@ -17,7 +17,8 @@ async function generateModel(rows: any, actualUserId: number) {
             profileImage: "falta",
             fiendshipStatus: actualUserId != user[0] ? user[10] : null,
             skills: user[11][0].id != null ? user[11] : [],
-            friendsAmount: friendsAmount!.toString() 
+            friendsAmount: friendsAmount!.toString(),
+            cedula: null
         };
         
         if (userModel.id == actualUserId) {
