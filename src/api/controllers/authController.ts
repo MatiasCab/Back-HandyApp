@@ -57,22 +57,28 @@ export const addUserToVerify = async (req: Request, res: Response) => {
 }
 
 export const userVerification = async (req, res) => {
-    const { verificationCode } = req.body;
+    const { verificationCode, email } = req.body;
     console.log("cadoifo", req.body);
 
     try {
-        if (!verificationCode || verificationCode.toString().length < 5) {
+
+        if (!verificationCode || !email) {
+            res.status(400).send({ error: true, message: 'Fields cannot be null' });
+            return;
+        }
+
+        if (verificationCode.toString().length < 5) {
             res.status(400).send({ error: true, message: 'Verification code have an incorrect format.', name: "InvalidVerificationCode" });
             return;
         }
         
-        const verificationResult = await existVerificationCode(verificationCode);
+        const verificationResult = await existVerificationCode(verificationCode, email);
         if (!verificationResult) {
             res.status(400).send({ error: true, message: 'Verification code is invalid.', name: "InvalidVerificationCode" });
             return
         } 
 
-        await insertUserVerified(verificationCode);
+        await insertUserVerified(verificationCode, email);
         res.status(200).send({ error: false, message: 'User created!!' });
 
     } catch (e) {

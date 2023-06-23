@@ -73,17 +73,18 @@ export const deleteFriendship = async (req, res) => {
     }
 };
 
+//FIXME optional image
 export const updateUserInfo = async (req, res) => {
-    const { imageName, description, lat, lng, skills } = req.body;
+    const { image, description, lat, lng, skills } = req.body;
     const { userId } = req.user;
     try {
 
-        if (!imageName || !description || !lat || !lng || !skills) {
+        if (!image || !description || !lat || !lng || !skills) {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
 
-        await updateUser(imageName, description, lat, lng, skills, userId);
+        await updateUser(image, description, lat, lng, skills, userId);
         res.status(200).send({ error: false, message: 'User updated!!' });
 
     } catch (e) {

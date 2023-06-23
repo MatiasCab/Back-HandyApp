@@ -1,7 +1,7 @@
 import { getDB } from "../services/sqlDatabase";
 
 const database = getDB();
-
+//FIXME Arreglar el tema de las id porque se rompe
 async function createLocationsMock() {
     const queryStatement = `INSERT INTO locations (id, lat, lng)
                             VALUES (1, 0, 0)

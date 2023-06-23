@@ -36,8 +36,8 @@ async function deleteUnverifiedUser(verificationCode: string) {
     await database.query(queryStatement);
 }
 
-async function updateReferrerID(verificationCode: string) {
-    const [username, referralCode] = await existVerificationCode(verificationCode) as [string, number];
+async function updateReferrerID(verificationCode: string, email: string) {
+    const [username, referralCode] = await existVerificationCode(verificationCode, email) as [string, number];
     console.log("PRIMERRRRR", referralCode);
     const referrerId = await existReferralCode(referralCode);
     const queryStatement = `UPDATE users
@@ -53,10 +53,11 @@ export async function insertUserToVerify(cedula: number, username: string,	name:
                             (id_card_number, username,	firstname, lastname, birthday, referral_code, email, hashed_password, verify_code, verify_code_expiration)
                             VALUES (${cedula}, '${username}', '${name}', '${lastname}', '${birthday}', ${referralCode}, '${email}', '${hashedPassword}', ${verificationCode}, '${expireDate}');`;
     
+                            console.log(queryStatement);
     await database.query(queryStatement);
 }
 
-export async function insertUserVerified(verificationCode: string) {
+export async function insertUserVerified(verificationCode: string, email: string) {
     const referralCode = await generateReferralCode();
     console.log(referralCode);
     const queryStatement = `INSERT INTO users (id_card_number, username, firstname, lastname, birthday, email, hashed_password, referral_code)
@@ -65,7 +66,7 @@ export async function insertUserVerified(verificationCode: string) {
                             WHERE U.verify_code = ${verificationCode};`;
     
     await database.query(queryStatement);
-    await updateReferrerID(verificationCode);
+    await updateReferrerID(verificationCode, email);
     await deleteUnverifiedUser(verificationCode);
 }
 

@@ -4,7 +4,7 @@ import { getUserIdByUsername} from "./getUsersQuerys";
 const database = getDB();
 
 
-//TODO SEPARARLO PARA QUE ESTE MAS LINOD.
+//TODO SEPARARLO PARA QUE ESTE MAS LINDO.
 async function generateModel(rows: any, withFullInfo) {
     const reviews: any = [];
     for (const review of rows) {
