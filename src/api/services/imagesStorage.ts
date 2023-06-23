@@ -1,10 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import dotenv from "dotenv";
-import * as fs from 'fs';
 
 dotenv.config();
-
-fs.writeFileSync('service-account-new.json', process.env.SERVICE_ACCOUNT!)
 
 const STORAGE = new Storage({
     keyFilename: "service-account-new.json",

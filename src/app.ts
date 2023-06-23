@@ -9,8 +9,6 @@ import { usersRouter } from './api/routes/usersRouter';
 import { reviewsRouter } from './api/routes/reviewsRouter';
 import { generateBDTables } from './api/querys/createTablesQuery';
 import { generateMockedData } from './api/querys/createMockData';
-import { generateLocationImage } from './api/helpers/getLocationImage';
-
 
 dotenv.config();
 
@@ -45,7 +43,6 @@ app.listen(PORT, async () => {
   try {
     await generateBDTables();
     await generateMockedData();
-    await generateLocationImage("d");
     console.log('Inicializations operations ready');
   } catch (error) {
     console.log('Error in inicializations operations:', error);

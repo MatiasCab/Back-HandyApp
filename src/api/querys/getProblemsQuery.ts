@@ -1,3 +1,4 @@
+import { getLocationImage } from "../helpers/getLocationImage";
 import { getDB } from "../services/sqlDatabase";
 import { selectUserById } from "./getUsersQuerys";
 
@@ -65,7 +66,7 @@ async function generateModel(rows: any, actualUserId?: number) {
           description: problem[7],
           lat: problem[8],
           lng: problem[9],
-          ubicationImage: "proximamente",
+          locationImage: await getLocationImage(problem[8], problem[9]),
           skills: problem[10]
         };
         if(actualUserId) {

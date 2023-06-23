@@ -1,20 +1,24 @@
-// import { getBucket } from "../services/imagesStorage";
-// import { getDB } from "../services/sqlDatabase";
-// //import { Image } from "../models/image";
-// import { dateFormater } from "./utils";
-// //import { USERS_TABLE } from "../../config/const";
+import { getBucket } from "../services/imagesStorage";
+//import { getDB } from "../services/sqlDatabase";
+//import { dateFormater } from "./utils";
 
-// async function getImageURL(imageName: string) {
-//     const expireDate = Date.now() + 1 * 24 * 60 * 60 * 1000;
-//     const [url] = await getBucket()
-//         .file(imageName)
-//         .getSignedUrl({
-//             version: 'v4',
-//             action: 'read',
-//             expires: expireDate
-//         });
-//     return { imageURL: url, expireDate: expireDate };
-// };
+async function existImageController(imageName: string) {
+    const [exist] = await getBucket()
+        .file(imageName).exists();
+    return exist;
+};
+
+async function generateImageURL(imageName: string){
+    const expireDate = Date.now() + 1 * 24 * 60 * 60 * 1000;
+    const [url] = await getBucket()
+        .file(imageName)
+        .getSignedUrl({
+            version: 'v4',
+            action: 'read',
+            expires: expireDate
+        });
+    return { imageURL: url, expireDate: expireDate };
+}
 
 // export async function regulatorImagesLinks(images: Image[], table: string) {
 //     const msInHour = 1000 * 60 * 60;
@@ -36,12 +40,16 @@
 //     }
 // }
 
-// export async function uploadImage(image: Buffer, imageName: string) {
-//     await getBucket().file(imageName).save(image);
+export async function getImageURL(imageName: string) {
+    const existImage = await existImageController(imageName);
+    if(!existImage) return undefined;
+    return await generateImageURL(imageName);
+};
 
-//     const imageArray = [{ imageName, imageLink: null, expireDate: null }];
+export async function uploadImage(image: Buffer, imageName: string) {
+    await getBucket().file(imageName).save(image);
 
-//     await regulatorImagesLinks(imageArray, USERS_TABLE);
+    const imageInfo = await getImageURL(imageName);
 
-//     return imageArray[0];
-// }
+    return imageInfo;
+}
