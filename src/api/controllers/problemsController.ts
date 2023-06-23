@@ -47,7 +47,8 @@ export const getProblems = async (req, res) => {
     const { userId } = req.user
     try {
 
-        const problems = await selectProblems(userId);
+        const filters = generateFilters(req.query, userId);
+        const problems = await selectProblems(userId, filters);
         res.status(200).send({problems});
 
     } catch (e) {
@@ -60,7 +61,7 @@ export const getUserProblems = async (req, res) => {
     const { userId } = req.user
     const otherUserId = req.params.id;
     try {
-        const filters = generateFilters(req.query, userId, otherUserId);
+        const filters = generateFilters(req.query, userId);
         const problems = await selectUserProblem(otherUserId, filters);
         res.status(200).send({problems});
     } catch (e) {

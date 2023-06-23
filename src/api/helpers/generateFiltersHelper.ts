@@ -1,5 +1,5 @@
 function statusFilter(param){
-    if(param == 'resolved') return 'RESOLVED';
+    if(param == 'resolved') return 'CLOSED';
     return 'OPEN';
 }
 
@@ -18,7 +18,7 @@ function creatorFilter(param){
     return 'all';
 }
 
-export function generateFilters(queryFilters, actualUserId?, _otherUserId?) {
+export function generateFilters(queryFilters, actualUserId?) {
     const filtersList = new Map();
     filtersList.set('actualUserId', actualUserId);
 

@@ -78,12 +78,14 @@ async function generateModel(rows: any, actualUserId?: number) {
       }
     return problems;
 }
-export async function selectProblems(actualUserId: number) {;
+export async function selectProblems(actualUserId: number, filters: Map<string, string>) {;
     const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.picture_name, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                             FROM problems AS P
                             LEFT JOIN problems_skills AS S ON P.id = S.problem_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
                             JOIN locations AS U ON U.id = P.location_id
+                            LEFT JOIN friends AS F ON ((P.creator_id = F.requesting_user_id OR P.creator_id = F.receiving_user_id) AND F.accepted = TRUE)
+                            WHERE P.id = P.id ${generateFiltersInProblemQuery(filters)}
                             GROUP BY P.id,
                             U.lat, U.lng;`;
 
