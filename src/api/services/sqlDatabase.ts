@@ -1,4 +1,3 @@
-
 import { Client } from 'ts-postgres';
 import dotenv from "dotenv";
 
