@@ -7,8 +7,9 @@ import { authRouter } from './api/routes/authRouter';
 import { problemsRouter } from './api/routes/problemsRouter';
 import { usersRouter } from './api/routes/usersRouter';
 import { reviewsRouter } from './api/routes/reviewsRouter';
-import { generateBDTables } from './api/querys/createTablesQuery';
+import { generateBDTables } from './api/querys/createTablesQueries';
 import { generateMockedData } from './api/querys/createMockData';
+import { skillsRouter } from './api/routes/skillsRouter';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use(`${API_URL}/auth`, authRouter);
 app.use(`${API_URL}/problems`, problemsRouter);
 app.use(`${API_URL}/users`, usersRouter);
 app.use(`${API_URL}/reviews`, reviewsRouter);
+app.use(`${API_URL}/skills`, skillsRouter);
 
 const PORT = process.env.PORT || 8080;
 // starting the server

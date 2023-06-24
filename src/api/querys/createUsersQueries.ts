@@ -1,7 +1,7 @@
 import { dateFormater } from "../helpers/utils";
 import { getDB } from "../services/sqlDatabase";
-import { getUbicationId } from "./createProblemsQuerys";
-import { existReferralCode, existVerificationCode } from "./verificationsQuerys";
+import { getUbicationId } from "./createProblemsQueries";
+import { existReferralCode, existVerificationCode } from "./verificationsQueries";
 
 const database = getDB();
 

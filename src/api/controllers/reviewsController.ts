@@ -1,4 +1,4 @@
-import { insertReview, selectProblemReviews, selectUserReviews } from "../querys/manageReviewsQuerys";
+import { insertReview, selectProblemReviews, selectUserReviews } from "../querys/manageReviewsQueries";
 
 //TODO ARREGLAR ERRORS RESPONSE
 

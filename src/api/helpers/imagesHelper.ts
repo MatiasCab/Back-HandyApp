@@ -21,8 +21,10 @@ async function generateImageURL(imageName: string){
 }
 
 export async function getImageURL(imageName: string) {
+    if (!imageName) return undefined;
     const existImage = await existImageController(imageName);
     if(!existImage) return undefined;
+    console.log("NOMBRE IMAGENNN",imageName);
     return await generateImageURL(imageName);
 };
 

@@ -1,5 +1,5 @@
 import { getDB } from "../services/sqlDatabase";
-import { getUserByUsername} from "./getUsersQuerys";
+import { getUserByUsername} from "./getUsersQueries";
 
 const database = getDB();
 

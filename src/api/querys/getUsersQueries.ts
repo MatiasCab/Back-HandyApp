@@ -1,12 +1,14 @@
+import { getImageURL } from "../helpers/imagesHelper";
 import { getDB } from "../services/sqlDatabase";
 
 const database = getDB();
 
 async function generateModel(rows: any, actualUserId: number) {
     const users: any = [];
-    console.log(rows);
     for (const user of rows) {
         const friendsAmount = await getUserFriendsAmount(actualUserId);
+        const image = await getImageURL(user.profile_picture_name);
+        console.log("USUARIOOOO",user);
         let userModel: any = {
             id: user.id,
             firstname: user.firstname,
@@ -15,7 +17,7 @@ async function generateModel(rows: any, actualUserId: number) {
             singupDate: user.admission_date,
             email: user.email,
             description: user.description,
-            profileImage: "falta",
+            profileImage: image ? image.imageURL : null,
             fiendshipStatus: actualUserId != user.id ? user.friendship_status : null,
             skills: user.skills[0].id != null ? user.skills : [],
             friendsAmount: friendsAmount!.toString(),
@@ -41,6 +43,7 @@ function query(onlyOne, actualUser, userRequested?) {
                             U.email,
                             U.admission_date,
                             U.description,
+                            U.profile_picture_name,
                             CASE
                                 WHEN F.accepted IS NULL THEN 0
                                 WHEN F.accepted IS NOT NULL AND F.accepted = TRUE THEN 1
@@ -56,7 +59,8 @@ function query(onlyOne, actualUser, userRequested?) {
                             LEFT JOIN users_skills AS S ON U.id = S.user_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
                             ${onlyOne ? `WHERE U.id = ${userRequested}` : `WHERE U.id = U.id`}
-                             GROUP BY U.id, F.accepted, F.receiving_user_id, F.requesting_user_id;`
+                             GROUP BY U.id, F.accepted, F.receiving_user_id, F.requesting_user_id;`;
+    console.log(queryStatement);
     return queryStatement;
 }
 

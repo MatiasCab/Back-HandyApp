@@ -1,7 +1,7 @@
 //import * as nodemailer from 'nodemailer';
 import dotenv from "dotenv";
 //import { google } from 'googleapis';
-import { existVerificationCode } from "../querys/verificationsQuerys";
+import { existVerificationCode } from "../querys/verificationsQueries";
 
 dotenv.config();
 

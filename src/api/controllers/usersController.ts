@@ -1,7 +1,7 @@
 import { uploadBase64Image } from "../helpers/imagesHelper";
-import { updateUser } from "../querys/createUsersQuerys";
-import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQuerys";
-import { getAllUsers, selectUserById } from "../querys/getUsersQuerys";
+import { updateUser } from "../querys/createUsersQueries";
+import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQueries";
+import { getAllUsers, selectUserById } from "../querys/getUsersQueries";
 
 //TODO ARREGLAR ERRORS RESPONSE
 
@@ -87,7 +87,7 @@ export const updateUserInfo = async (req, res) => {
 
         let imageName: any = undefined;
         if (image) {
-            imageName = `problem_${Date.now()}.jpg`;
+            imageName = `user_${Date.now()}.jpg`;
             await uploadBase64Image(image, imageName);
         }
 

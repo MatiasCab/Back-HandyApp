@@ -1,7 +1,7 @@
 import { generateFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
-import { createProblem, updateProblem } from "../querys/createProblemsQuerys";
-import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQuery";
+import { createProblem, updateProblem } from "../querys/createProblemsQueries";
+import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQueries";
 
 //TODO ARREGLAR ERRORS RESPONSE
 //TODO CONSULTAR EL TEMA DE LAS IMAGENES, SI LES PARECE BIEN QUE NO SE BORREN EN EL BUCKET O SI HAY QUE BORRARLAS-

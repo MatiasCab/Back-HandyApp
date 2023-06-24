@@ -1,6 +1,7 @@
 import { getLocationImage } from "../helpers/getLocationImage";
+import { getImageURL } from "../helpers/imagesHelper";
 import { getDB } from "../services/sqlDatabase";
-import { selectUserById } from "./getUsersQuerys";
+import { selectUserById } from "./getUsersQueries";
 
 const database = getDB();
 
@@ -57,11 +58,12 @@ async function generateModel(rows: any, actualUserId?: number) {
     const problems: any = [];
     console.log(rows);
     for (const problem of rows) {
+      const image = await getImageURL(problem.picture_name);
         let problemModel: any = {
           id: problem.id,
           name: problem.name,
           postedDate: problem.created_date,
-          imageURL: problem.picture_name,
+          imageURL: image ? image.imageURL : null, //TODO IMAGEN PROBLEMAS
           status: problem.status,
           resolvedDate: problem.resolved_date,
           description: problem.description,

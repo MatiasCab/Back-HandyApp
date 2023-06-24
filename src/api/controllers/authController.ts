@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt';
 import { sendVerificationCode } from "../services/emailService";
 
 //import { dateFormater } from "../helpers/utils";
-import { existReferralCode, existUserCredentials, existUserVerifiedOrUnverified, existVerificationCode } from "../querys/verificationsQuerys";
-import { insertUserToVerify, insertUserVerified } from "../querys/createUsersQuerys";
+import { existReferralCode, existUserCredentials, existUserVerifiedOrUnverified, existVerificationCode } from "../querys/verificationsQueries";
+import { insertUserToVerify, insertUserVerified } from "../querys/createUsersQueries";
 
 const EXPIRE_TOKEN = 60 * 60;
 
