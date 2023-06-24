@@ -1,7 +1,7 @@
 import { staticMapUrl } from 'static-google-map';
 import dotenv from "dotenv";
 import axios from 'axios';
-import { getImageURL, uploadBase64Image } from './imagesHelper';
+import { existImageController, getImageURL, uploadBase64Image } from './imagesHelper';
 
 dotenv.config();
 
@@ -37,11 +37,11 @@ export async function generateLocationImage(lat, lng) {
 
 export async function getLocationImage(lat, lng) {
     const imageName = `${lat},${lng}.jpg`;
-    let imageInfo = await getImageURL(imageName);
-    if(imageInfo){
-        return imageInfo.imageURL;
+    
+    const existImage = await existImageController(imageName); //TODO preguntar si les parece bien esto
+    if(existImage){
+        return getImageURL(imageName);
     };
     await generateLocationImage(lat, lng);
-    imageInfo = await getImageURL(imageName)
-    return imageInfo?.imageURL;
+    return getImageURL(imageName);
 }

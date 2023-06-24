@@ -1,3 +1,4 @@
+import { generateUsersFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
 import { updateUser } from "../querys/createUsersQueries";
 import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQueries";
@@ -9,7 +10,8 @@ export const getUsers = async (req, res) => {
     const { userId } = req.user
     try {
 
-        const users = await getAllUsers(userId);
+        const filters = generateUsersFilters(req.query)
+        const users = await getAllUsers(userId, filters);
         res.status(200).send({users});
 
     } catch (e) {
@@ -23,7 +25,7 @@ export const getUserById = async (req, res) => {
     const otherUserId = req.params.id;
     try {
 
-        const [user] = await selectUserById(otherUserId, userId);
+        const user = await selectUserById(otherUserId, userId);
         res.status(200).send({user});
 
     } catch (e) {

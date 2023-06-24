@@ -13,3 +13,7 @@ const IMAGE_BUCKET = STORAGE.bucket(process.env.GCS_BUCKET!);
 export function getBucket() {
     return IMAGE_BUCKET;
 };
+
+export function getBucketName() {
+    return process.env.GCS_BUCKET!;
+};

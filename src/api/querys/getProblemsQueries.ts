@@ -12,7 +12,7 @@ function statusFilter(value) {
 
 function nameFilter(value) {
   if(value == '') return '';
-  return ` AND P.name LIKE '%${value}%'`;
+  return ` AND P.name ILIKE '%${value}%'`;
 }
 
 function skillsFilter(value) {
@@ -50,28 +50,29 @@ function generateFiltersInProblemQuery(filters: Map<string, string>) {
   queryFilteredStatement += skillsFilter(filters.get('skills'));
   queryFilteredStatement += friendsFilter(filters.get('creator'), filters.get('actualUserId')!); //TODO filtro de amigos.
 
-  console.log(queryFilteredStatement);
   return queryFilteredStatement;
 }
 
-async function generateModel(rows: any, actualUserId?: number) {
+async function generateModel(rows: any, fullInfo: boolean,  actualUserId?: number) {
     const problems: any = [];
-    console.log(rows);
     for (const problem of rows) {
-      const image = await getImageURL(problem.picture_name);
+      const imageURL = await getImageURL(problem.picture_name);
         let problemModel: any = {
           id: problem.id,
           name: problem.name,
           postedDate: problem.created_date,
-          imageURL: image ? image.imageURL : null, //TODO IMAGEN PROBLEMAS
+          imageURL: imageURL ? imageURL : null, //TODO IMAGEN PROBLEMAS
           status: problem.status,
           resolvedDate: problem.resolved_date,
-          description: problem.description,
           lat: problem.lat,
           lng: problem.lng,
-          locationImage: await getLocationImage(problem.lat, problem.lng),
+          distance: problem.distance,
           skills: problem.skills
         };
+        if(fullInfo){
+          problemModel.locationImage = await getLocationImage(problem.lat, problem.lng);
+          problemModel.description = problem.description;
+        }
         if(actualUserId) {
           const ownerUser = await selectUserById(problem.creator_id, actualUserId);
           problemModel.ownerUser = ownerUser;
@@ -82,8 +83,36 @@ async function generateModel(rows: any, actualUserId?: number) {
       }
     return problems;
 }
-export async function selectProblems(actualUserId: number, filters: Map<string, string>) {;
-    const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.picture_name, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+
+function locationSection(userLocation) {
+  if(!userLocation) return ' NULL AS distance';
+  return `, ST_Distance(
+            ST_MakePoint(U.lng, U.lat) ::geography,
+            ST_MakePoint(${userLocation.lng}, ${userLocation.lat}) ::geography
+          ) AS distance`
+}
+
+function orderSection(order) {
+  if(order == 'newest') return ' ORDER BY P.created_date DESC';
+  if(order == 'lastest') return ' ORDER BY P.created_date ASC';
+  if(order == 'nearby') return ' ORDER BY distance ASC NULLS LAST';
+  return '';
+}
+
+//TODO ARREGLAQR LAS QUERIES PARA QUE SEA SOLA UNA.
+export async function selectProblems(actualUserId: number, filters: Map<string, string>, userLocation?: {lat: number, lng: number}, order?: string) {;
+    const queryStatement = ` SELECT P.id, 
+                                    P.name, 
+                                    P.creator_id, 
+                                    P.created_date, 
+                                    P.picture_name, 
+                                    P.status, 
+                                    P.resolved_date, 
+                                    P.description, 
+                                    U.lat, 
+                                    U.lng, 
+                                    ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+                                    ${locationSection(userLocation)}
                             FROM problems AS P
                             LEFT JOIN problems_skills AS S ON P.id = S.problem_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
@@ -91,14 +120,25 @@ export async function selectProblems(actualUserId: number, filters: Map<string, 
                             LEFT JOIN friends AS F ON ((P.creator_id = F.requesting_user_id OR P.creator_id = F.receiving_user_id) AND F.accepted = TRUE)
                             WHERE P.id = P.id ${generateFiltersInProblemQuery(filters)}
                             GROUP BY P.id,
-                            U.lat, U.lng;`;
-
+                            U.lat, U.lng
+                            ${orderSection(order)};`;
     const result = await database.query(queryStatement);
-    return generateModel(result.rows, actualUserId);
+    return generateModel(result.rows, false, actualUserId);
 }
 
-export async function selectProblemById(problemId: number, actualUserId: number) {;
-    const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.picture_name, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+export async function selectProblemById(problemId: number, actualUserId: number, userLocation?: {lat: number, lng: number}) {;
+    const queryStatement = ` SELECT P.id, 
+                                    P.name, 
+                                    P.creator_id, 
+                                    P.created_date, 
+                                    P.picture_name, 
+                                    P.status, 
+                                    P.resolved_date, 
+                                    P.description, 
+                                    U.lat, 
+                                    U.lng, 
+                                    ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+                                    ${locationSection(userLocation)}
                             FROM problems AS P
                             LEFT JOIN problems_skills AS S ON P.id = S.problem_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
@@ -108,11 +148,22 @@ export async function selectProblemById(problemId: number, actualUserId: number)
                             U.lat, U.lng;`;
 
     const result = await database.query(queryStatement);
-    return await generateModel(result.rows, actualUserId);
+    return await generateModel(result.rows, true, actualUserId);
 }
 
-export async function selectUserProblem(userId: number, filters: Map<string, string>) {;
-  const queryStatement = `SELECT P.id, P.name, P.creator_id, P.created_date, P.picture_name, P.status, P.resolved_date, P.description, U.lat, U.lng, ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+export async function selectUserProblem(userId: number, filters: Map<string, string>, userLocation?: {lat: number, lng: number}, order?: string) {;
+  const queryStatement = ` SELECT P.id, 
+                                  P.name, 
+                                  P.creator_id, 
+                                  P.created_date, 
+                                  P.picture_name, 
+                                  P.status, 
+                                  P.resolved_date, 
+                                  P.description, 
+                                  U.lat, 
+                                  U.lng, 
+                                  ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
+                                  ${locationSection(userLocation)}
                           FROM problems AS P
                           LEFT JOIN problems_skills AS S ON P.id = S.problem_id
                           LEFT JOIN skills AS L ON S.skill_id = L.id
@@ -120,11 +171,10 @@ export async function selectUserProblem(userId: number, filters: Map<string, str
                           LEFT JOIN friends AS F ON ((P.creator_id = F.requesting_user_id OR P.creator_id = F.receiving_user_id) AND F.accepted = TRUE)
                           WHERE P.creator_id = ${userId} ${generateFiltersInProblemQuery(filters)}
                           GROUP BY P.id,
-                          U.lat, U.lng;`;
-
-  console.log(queryStatement);
+                          U.lat, U.lng
+                          ${orderSection(order)};`;
   const result = await database.query(queryStatement);
-  return await generateModel(result.rows);
+  return await generateModel(result.rows, false);
 }
 
 

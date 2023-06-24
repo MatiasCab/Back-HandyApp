@@ -1,7 +1,9 @@
-import { generateFilters } from "../helpers/generateFiltersHelper";
+import { generateProblemsOrder } from "../helpers/defineOrderHelper";
+import { generateProblemsFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
 import { createProblem, updateProblem } from "../querys/createProblemsQueries";
 import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQueries";
+import { getUserLocation } from "../querys/getUsersQueries";
 
 //TODO ARREGLAR ERRORS RESPONSE
 //TODO CONSULTAR EL TEMA DE LAS IMAGENES, SI LES PARECE BIEN QUE NO SE BORREN EN EL BUCKET O SI HAY QUE BORRARLAS-
@@ -63,8 +65,11 @@ export const getProblems = async (req, res) => {
     const { userId } = req.user
     try {
 
-        const filters = generateFilters(req.query, userId);
-        const problems = await selectProblems(userId, filters);
+        const filters = generateProblemsFilters(req.query, userId);
+        const userLocation = await getUserLocation(userId);
+        const order = generateProblemsOrder(req.query);
+
+        const problems = await selectProblems(userId, filters, userLocation, order);
         res.status(200).send({problems});
 
     } catch (e) {
@@ -77,8 +82,11 @@ export const getUserProblems = async (req, res) => {
     const { userId } = req.user
     const otherUserId = req.params.id;
     try {
-        const filters = generateFilters(req.query, userId);
-        const problems = await selectUserProblem(otherUserId, filters);
+        const filters = generateProblemsFilters(req.query, userId);
+        const userLocation = await getUserLocation(userId);
+        const order = generateProblemsOrder(req.query);
+
+        const problems = await selectUserProblem(otherUserId, filters, userLocation, order);
         res.status(200).send({problems});
     } catch (e) {
         console.log(e);
@@ -91,7 +99,8 @@ export const getProblembyId = async (req, res) => {
     const { userId } = req.user
     try {
 
-        const [result] = await selectProblemById(problemId, userId);
+        const userLocation = await getUserLocation(userId);
+        const [result] = await selectProblemById(problemId, userId, userLocation);
         res.status(200).send({result});
 
     } catch (e) {
