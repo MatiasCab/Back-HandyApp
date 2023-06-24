@@ -37,8 +37,10 @@ async function deleteUnverifiedUser(verificationCode: string) {
 }
 
 async function updateReferrerID(verificationCode: string, email: string) {
-    const [username, referralCode] = await existVerificationCode(verificationCode, email) as [string, number];
-    console.log("PRIMERRRRR", referralCode);
+    const result = await existVerificationCode(verificationCode, email);
+    const username = result.username;
+    const referralCode = result.referral_code;
+
     const referrerId = await existReferralCode(referralCode);
     const queryStatement = `UPDATE users
                             SET referred_id = ${referrerId}
@@ -70,14 +72,16 @@ export async function insertUserVerified(verificationCode: string, email: string
     await deleteUnverifiedUser(verificationCode);
 }
 
-export async function updateUser(pictureName: string, description: string, lat: number, lng: number, skills: any, userId: number) {
+export async function updateUser(description: string, lat: number, lng: number, skills: any, userId: number, pictureName?: string) {
     const ubicationId = await getUbicationId(lat, lng);
+    const picture = pictureName ? pictureName : 'profile_picture_name';
     const queryStatement = `UPDATE users
-                            SET profile_picture_name = '${pictureName}',
+                            SET profile_picture_name = '${picture}',
                                 description = '${description}',
                                 location_id = ${ubicationId}
                             WHERE id = ${userId}
                             RETURNING id;`;
+    console.log(queryStatement);
     const result = await database.query(queryStatement);
     if (result.rows.length < 1) { return; }
     await deleteUserSkillsAssociations(userId);

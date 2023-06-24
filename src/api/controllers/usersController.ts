@@ -91,7 +91,7 @@ export const updateUserInfo = async (req, res) => {
             await uploadBase64Image(image, imageName);
         }
 
-        await updateUser(image, description, lat, lng, skills, userId);
+        await updateUser(description, lat, lng, skills, userId, imageName);
         res.status(200).send({ error: false, message: 'User updated!!' });
 
     } catch (e) {

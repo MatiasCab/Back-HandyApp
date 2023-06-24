@@ -45,8 +45,13 @@ export const updateProblems = async (req, res) => {
             await uploadBase64Image(image, imageName);
         }
 
-        await updateProblem(name, imageName, description, lat, lng, skills, problemsId, userId)
-        res.status(200).send({ error: false, message: 'Problem updated!!' });
+        const updated = await updateProblem(name, description, lat, lng, skills, problemsId, userId, imageName);
+
+        if(updated) {
+            res.status(200).send({ error: false, message: 'Problem updated!!' });
+        } else {
+            res.status(404).send({ error: true, message: 'Problem not found!!' });
+        }
 
     } catch (e) {
         console.log(e);

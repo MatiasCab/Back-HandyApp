@@ -4,25 +4,26 @@ const database = getDB();
 
 async function generateModel(rows: any, actualUserId: number) {
     const users: any = [];
+    console.log(rows);
     for (const user of rows) {
         const friendsAmount = await getUserFriendsAmount(actualUserId);
         let userModel: any = {
-            id: user[0],
-            name: user[1],
-            username: user[3],
-            lastname: user[4],
-            singupDate: user[8],
-            email: user[7],
-            description: user[9],
+            id: user.id,
+            firstname: user.firstname,
+            username: user.username,
+            lastname: user.lastname,
+            singupDate: user.admission_date,
+            email: user.email,
+            description: user.description,
             profileImage: "falta",
-            fiendshipStatus: actualUserId != user[0] ? user[10] : null,
-            skills: user[11][0].id != null ? user[11] : [],
+            fiendshipStatus: actualUserId != user.id ? user.friendship_status : null,
+            skills: user.skills[0].id != null ? user.skills : [],
             friendsAmount: friendsAmount!.toString(),
-            cedula: null
+            CI: null
         };
         
         if (userModel.id == actualUserId) {
-            userModel.cedula = user[2];
+            userModel.CI = user.id_card_number;
         }
         users.push(userModel);
       }
@@ -80,11 +81,12 @@ export async function getUserFriendsAmount(userId) {;
                             WHERE (F.requesting_user_id = ${userId} OR F.receiving_user_id = ${userId}) AND F.accepted = TRUE;`;
 
     const result = await database.query(queryStatement);
-    return result.rows[0][0];
+    console.log(result);
+    return result.rows[0].count;
 }
 
-export async function getUserIdByUsername(username: string) {
-    const queryStatement = `SELECT id FROM users WHERE username = '${username}';`;
+export async function getUserByUsername(username: string) {
+    const queryStatement = `SELECT * FROM users WHERE username = '${username}';`;
     
     const result = await database.query(queryStatement);
     console.log(queryStatement,result);

@@ -33,7 +33,8 @@ export async function getUbicationId(lat: number, lng: number) {
                             WHERE U.lat = ${lat} AND U.lng = ${lng};`;
 
     const result = await database.query(queryStatement);
-    return result.rows[0][0];
+    console.log(result);
+    return result.rows[0].id;
 }
 
 
@@ -44,7 +45,7 @@ export async function createProblem(name: string, imageName: string, description
                             RETURNING id;`;
     console.log(queryStatement);
     const result = await database.query(queryStatement);
-    await createProblemSkillsAssociations(skills, result.rows[0][0]);
+    await createProblemSkillsAssociations(skills, result.rows[0].id);
 }
 
 //TODO fijarse si funciona con el tema de la imagen
@@ -59,8 +60,9 @@ export async function updateProblem(name: string, description: string, lat: numb
                             WHERE id = ${problemId} AND creator_id = ${userId}
                             RETURNING id;`;
     const result = await database.query(queryStatement);
-    if (result.rows.length < 1) { return; }
+    if (result.rows.length < 1) { return false; }
     await deleteProblemSkillsAssociations(problemId); //REGULAR QUE SEA SOLO SI ESTO SI SE ACTUZALIZO ALGO
     await createProblemSkillsAssociations(skills, problemId);
+    return true;
 }
 

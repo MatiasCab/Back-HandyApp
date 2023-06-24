@@ -45,7 +45,7 @@ export async function existReferralCode(referralCode: any) {
     
     const result = await database.query(queryStatement);
     if(result.rows.length == 0) { return; }
-    const [id] = result.rows[0];
+    const {id} = result.rows[0];
     return id;
 }
 
@@ -53,9 +53,9 @@ export async function existVerificationCode(verificationCode: string, email?: st
     await deleteExpireUnverifiedUsers();
     const queryStatement =  `SELECT U.username, U.referral_code
                              FROM non_verified_users AS U
-                             WHERE U.verify_code = ${verificationCode} AND U.email = '${ email ? email: 'U.email' }';`;
-    console.log("CERORORORO",queryStatement);                       
+                             WHERE U.verify_code = ${verificationCode} AND U.email = '${ email ? email: 'U.email' }';`;                      
     const result = await database.query(queryStatement);
+    console.log("CERORORORO",result); 
     if(result.rows.length == 0) { return; }
     return result.rows[0];
 }

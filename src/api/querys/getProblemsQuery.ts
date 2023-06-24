@@ -55,25 +55,26 @@ function generateFiltersInProblemQuery(filters: Map<string, string>) {
 
 async function generateModel(rows: any, actualUserId?: number) {
     const problems: any = [];
+    console.log(rows);
     for (const problem of rows) {
         let problemModel: any = {
-          id: problem[0],
-          name: problem[1],
-          postedDate: problem[3],
-          imageURL: problem[4],
-          status: problem[5],
-          resolvedDate: problem[6],
-          description: problem[7],
-          lat: problem[8],
-          lng: problem[9],
-          locationImage: await getLocationImage(problem[8], problem[9]),
-          skills: problem[10]
+          id: problem.id,
+          name: problem.name,
+          postedDate: problem.created_date,
+          imageURL: problem.picture_name,
+          status: problem.status,
+          resolvedDate: problem.resolved_date,
+          description: problem.description,
+          lat: problem.lat,
+          lng: problem.lng,
+          locationImage: await getLocationImage(problem.lat, problem.lng),
+          skills: problem.skills
         };
         if(actualUserId) {
-          const ownerUser = await selectUserById(problem[2], actualUserId);
+          const ownerUser = await selectUserById(problem.creator_id, actualUserId);
           problemModel.ownerUser = ownerUser;
         } else {
-          problemModel.ownerUserId = problem[2];
+          problemModel.ownerUserId = problem.creator_id;
         }
         problems.push(problemModel);
       }

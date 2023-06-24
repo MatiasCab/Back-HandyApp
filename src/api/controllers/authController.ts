@@ -52,6 +52,7 @@ export const addUserToVerify = async (req: Request, res: Response) => {
         res.status(200).send({ error: false, message: "Verification code send." });
 
     } catch (e) {
+        console.log(e);
         res.status(500).send({ error: true, message: "Internal server error", name: 'ServerError' });
     }
 }
@@ -111,7 +112,9 @@ export const userLogin = async (req: Request, res: Response) => {
 
         if (user) {
 
-            const [ userId, username, hashedPassword ] = user as [number, string, string];
+            const { username } = user;
+            const hashedPassword = user.hashed_password;
+            const userId = user.id;
 
             const validPassword = bcrypt.compareSync(password, hashedPassword);
 
@@ -132,6 +135,7 @@ export const userLogin = async (req: Request, res: Response) => {
         res.status(400).send({ error: true, message: 'Wrong username or password.', name: 'InvalidUsernameOrPassword' });
 
     } catch (e) {
+        console.log(e);
         res.status(500).send({ error: true, message: "Internal server error", name: 'ServerError' });
     }
 }
