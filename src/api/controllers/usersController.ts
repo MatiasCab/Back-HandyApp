@@ -1,5 +1,6 @@
 import { generateUsersFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
+import { pagination } from "../helpers/utils";
 import { updateUser } from "../querys/createUsersQueries";
 import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQueries";
 import { getAllUsers, selectUserById } from "../querys/getUsersQueries";
@@ -11,7 +12,9 @@ export const getUsers = async (req, res) => {
     try {
 
         const filters = generateUsersFilters(req.query)
-        const users = await getAllUsers(userId, filters);
+        const paginationInfo = pagination(req.query);
+        
+        const users = await getAllUsers(userId, paginationInfo, filters);
         res.status(200).send({users});
 
     } catch (e) {

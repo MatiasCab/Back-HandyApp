@@ -99,8 +99,9 @@ function orderSection(order) {
   return '';
 }
 
+
 //TODO ARREGLAQR LAS QUERIES PARA QUE SEA SOLA UNA.
-export async function selectProblems(actualUserId: number, filters: Map<string, string>, userLocation?: {lat: number, lng: number}, order?: string) {;
+export async function selectProblems(actualUserId: number, filters: Map<string, string>, pageInfo: { start: number, end: number }, userLocation?: {lat: number, lng: number}, order?: string) {;
     const queryStatement = ` SELECT P.id, 
                                     P.name, 
                                     P.creator_id, 
@@ -121,7 +122,9 @@ export async function selectProblems(actualUserId: number, filters: Map<string, 
                             WHERE P.id = P.id ${generateFiltersInProblemQuery(filters)}
                             GROUP BY P.id,
                             U.lat, U.lng
-                            ${orderSection(order)};`;
+                            ${orderSection(order)}
+                            OFFSET ${pageInfo.start}
+                            LIMIT ${pageInfo.end};`;
     const result = await database.query(queryStatement);
     return generateModel(result.rows, false, actualUserId);
 }
@@ -151,7 +154,7 @@ export async function selectProblemById(problemId: number, actualUserId: number,
     return await generateModel(result.rows, true, actualUserId);
 }
 
-export async function selectUserProblem(userId: number, filters: Map<string, string>, userLocation?: {lat: number, lng: number}, order?: string) {;
+export async function selectUserProblem(userId: number, filters: Map<string, string>, pageInfo: { start: number, end: number }, userLocation?: {lat: number, lng: number}, order?: string) {;
   const queryStatement = ` SELECT P.id, 
                                   P.name, 
                                   P.creator_id, 
@@ -172,7 +175,9 @@ export async function selectUserProblem(userId: number, filters: Map<string, str
                           WHERE P.creator_id = ${userId} ${generateFiltersInProblemQuery(filters)}
                           GROUP BY P.id,
                           U.lat, U.lng
-                          ${orderSection(order)};`;
+                          ${orderSection(order)}
+                          OFFSET ${pageInfo.start}
+                          LIMIT ${pageInfo.end};`;
   const result = await database.query(queryStatement);
   return await generateModel(result.rows, false);
 }

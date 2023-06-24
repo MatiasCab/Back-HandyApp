@@ -1,6 +1,7 @@
 import { generateProblemsOrder } from "../helpers/defineOrderHelper";
 import { generateProblemsFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
+import { pagination } from "../helpers/utils";
 import { createProblem, updateProblem } from "../querys/createProblemsQueries";
 import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQueries";
 import { getUserLocation } from "../querys/getUsersQueries";
@@ -68,8 +69,9 @@ export const getProblems = async (req, res) => {
         const filters = generateProblemsFilters(req.query, userId);
         const userLocation = await getUserLocation(userId);
         const order = generateProblemsOrder(req.query);
+        const paginationInfo = pagination(req.query);
 
-        const problems = await selectProblems(userId, filters, userLocation, order);
+        const problems = await selectProblems(userId, filters, paginationInfo, userLocation, order);
         res.status(200).send({problems});
 
     } catch (e) {
@@ -85,8 +87,9 @@ export const getUserProblems = async (req, res) => {
         const filters = generateProblemsFilters(req.query, userId);
         const userLocation = await getUserLocation(userId);
         const order = generateProblemsOrder(req.query);
+        const paginationInfo = pagination(req.query);
 
-        const problems = await selectUserProblem(otherUserId, filters, userLocation, order);
+        const problems = await selectUserProblem(otherUserId, filters, paginationInfo, userLocation, order);
         res.status(200).send({problems});
     } catch (e) {
         console.log(e);

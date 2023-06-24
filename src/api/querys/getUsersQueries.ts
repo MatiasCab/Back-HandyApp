@@ -89,7 +89,7 @@ function generateFriendFiltersInUsersQuery(filters: Map<string, string>) {
     return queryFilteredStatement;
 }
 
-function query(onlyOne, actualUser, userRequested?, filters?) {
+function query(onlyOne, actualUser, pageInfo: { start: number, end: number }, userRequested?, filters?) {
     const queryStatement = `SELECT *
                             FROM (
                                 SELECT U.id,
@@ -121,6 +121,8 @@ function query(onlyOne, actualUser, userRequested?, filters?) {
                                 AND U.id <> '${ onlyOne ? -1 : actualUser}'
                                 ${onlyOne ? '' : generateFiltersInUsersQuery(filters)}
                                 GROUP BY U.id, F.accepted, F.receiving_user_id, F.requesting_user_id
+                                OFFSET ${pageInfo.start}
+                                LIMIT ${pageInfo.end}
                                 ) AS subquery
                                 WHERE id = id ${onlyOne ? '' : generateFriendFiltersInUsersQuery(filters)}`;
 
@@ -136,9 +138,9 @@ export async function selectUserById(userRequested, actualUser) {
     return userModel;
 }
 
-export async function getAllUsers(actualUser, filters?) {
+export async function getAllUsers(actualUser, pageInfo: { start: number, end: number }, filters?) {
     ;
-    const queryStatement = query(false, actualUser, undefined, filters);
+    const queryStatement = query(false, actualUser, pageInfo, undefined, filters);
 
     const result = await database.query(queryStatement);
     return await generateModel(result.rows, actualUser);
