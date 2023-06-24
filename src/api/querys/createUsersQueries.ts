@@ -87,3 +87,10 @@ export async function updateUser(description: string, lat: number, lng: number, 
     await deleteUserSkillsAssociations(userId);
     await createUserSkillsAssociations(skills, userId);
 }
+
+export async function changeUserPassword(password: string, userId: number) {
+    const queryStatement = `UPDATE users
+                            SET hashed_password = '${password}'
+                            WHERE id = ${userId};`;
+    await database.query(queryStatement);
+}

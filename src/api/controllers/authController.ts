@@ -5,7 +5,8 @@ import { sendVerificationCode } from "../services/emailService";
 
 //import { dateFormater } from "../helpers/utils";
 import { existReferralCode, existUserCredentials, existUserVerifiedOrUnverified, existVerificationCode } from "../querys/verificationsQueries";
-import { insertUserToVerify, insertUserVerified } from "../querys/createUsersQueries";
+import { changeUserPassword, insertUserToVerify, insertUserVerified } from "../querys/createUsersQueries";
+import { verifyIdCardNumber } from "../helpers/verificationsHelpers";
 
 const EXPIRE_TOKEN = 60 * 60;
 
@@ -27,6 +28,12 @@ export const addUserToVerify = async (req: Request, res: Response) => {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
+
+        const isCIValid = verifyIdCardNumber(CI);
+        if(!isCIValid){
+            res.status(400).send({ error: true, message: 'Id card bumber is invalid.', name: "InvalidIDCardNumber"});
+            return;
+        }
 
         const exist = await existReferralCode(referredCode);
         if (!exist) {
@@ -139,3 +146,18 @@ export const userLogin = async (req: Request, res: Response) => {
         res.status(500).send({ error: true, message: "Internal server error", name: 'ServerError' });
     }
 }
+
+export const changePassword = async (req, res) => {
+    const { userId } = req.user
+    const { password } = req.body;
+    try {
+
+        const hashedPassword = generateHashedPassword(password);
+        await changeUserPassword(hashedPassword, userId);
+        res.status(200).send({ error: false, message: 'Password updated!!' });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: true, message: "Internal server error getting problem", name: 'ServerError' });
+    }
+};
