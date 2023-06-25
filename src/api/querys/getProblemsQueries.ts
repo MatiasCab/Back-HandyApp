@@ -85,7 +85,7 @@ async function generateModel(rows: any, fullInfo: boolean,  actualUserId?: numbe
 }
 
 function locationSection(userLocation) {
-  if(!userLocation) return ' NULL AS distance';
+  if(!userLocation) return ', NULL AS distance';
   return `, ST_Distance(
             ST_MakePoint(U.lng, U.lat) ::geography,
             ST_MakePoint(${userLocation.lng}, ${userLocation.lat}) ::geography

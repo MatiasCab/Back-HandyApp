@@ -12,6 +12,12 @@ async function createLocationsTable() {
     await database.query(queryStatement);
 }
 
+async function enablePostGIS() {
+    const queryStatement = `CREATE EXTENSION IF NOT EXISTS postgis;`;
+                        
+    await database.query(queryStatement);
+}
+
 async function createUsersTable() {
     const queryStatement = `CREATE TABLE IF NOT EXISTS "users" (
                             id SERIAL PRIMARY KEY,
@@ -144,4 +150,5 @@ export async function generateBDTables(){
     await createReviewsTable()
     await createUsersSkillsTable();
     await createProblemsSkillsTable();
+    await enablePostGIS();
 }
