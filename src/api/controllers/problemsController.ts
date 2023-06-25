@@ -105,8 +105,8 @@ export const getProblembyId = async (req, res) => {
     try {
 
         const userLocation = await getUserLocation(userId);
-        const [result] = await selectProblemById(problemId, userId, userLocation);
-        res.status(200).send({result});
+        const [problem] = await selectProblemById(problemId, userId, userLocation);
+        res.status(200).send({problem});
 
     } catch (e) {
         console.log(e);
