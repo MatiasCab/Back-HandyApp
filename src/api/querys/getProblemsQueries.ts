@@ -19,7 +19,7 @@ function skillsFilter(value) {
   let statement = ` AND NOT EXISTS (
                       SELECT 1
                       FROM skills AS SK
-                      WHERE SK.name IN (`;
+                      WHERE SK.id IN (`;
   let pass = false;
   value.forEach(skill => {
     if(!skill.includes("'") && skill != '') {
