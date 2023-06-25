@@ -15,7 +15,7 @@ export async function generateLocationImage(lat, lng) {
         maptype: 'roadmap',
         markers: [
             {
-                location: { lat: -34.88874198228909, lng: -56.15956568422894 },
+                location: { lat: lat, lng: lng },
                 color: '0xD450E6',
                 size: 'normal'
             }

@@ -40,6 +40,7 @@ async function generateModel(rows: any, actualUserId: number) {
 
 function nameFilter(value) {
     if (value == '') return '';
+    console.log(value);
     return ` AND (U.firstname ILIKE '%${value}%' OR U.lastname ILIKE '%${value}%')`;
 }
 
