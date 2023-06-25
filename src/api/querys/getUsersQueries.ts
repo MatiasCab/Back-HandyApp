@@ -72,7 +72,7 @@ function friendsFilter(value) {
 
     if (value == 'friends') return query + '1)';
     if (value == 'pendent') return query + '2)';
-    if (value == 'stranger') return query + '2 OR friendship_status = 3)';
+    if (value == 'stranger') return query + '2 OR friendship_status = 3 OR friendship_status = 0)';
     return ``;
 }
 
