@@ -22,7 +22,7 @@ function skillsFilter(value) {
                       WHERE SK.name IN (`;
   let pass = false;
   value.forEach(skill => {
-    if(!skill.includes("'")) {
+    if(!skill.includes("'") && skill != '') {
       statement += `'${skill}',`;
       pass = true;
     }
