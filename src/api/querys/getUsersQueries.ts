@@ -89,7 +89,13 @@ function generateFriendFiltersInUsersQuery(filters: Map<string, string>) {
     return queryFilteredStatement;
 }
 
-function query(onlyOne, actualUser, pageInfo: { start: number, end: number }, userRequested?, filters?) {
+function paginationSection(paginationInfo) {
+    if(!paginationInfo) return '';
+    return `OFFSET ${paginationInfo.start}
+            LIMIT ${paginationInfo.end}`;
+}
+
+function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, userRequested?, filters?) {
     const queryStatement = `SELECT *
                             FROM (
                                 SELECT U.id,
@@ -106,40 +112,38 @@ function query(onlyOne, actualUser, pageInfo: { start: number, end: number }, us
                                 CASE
                                     WHEN F.accepted IS NULL THEN 0
                                     WHEN F.accepted IS NOT NULL AND F.accepted = TRUE THEN 1
-                                    WHEN ${actualUser} = F.receiving_user_id AND F.accepted = FALSE THEN 2
-                                    WHEN ${actualUser} = F.requesting_user_id AND F.accepted = FALSE THEN 3
+                                    WHEN $1 = F.receiving_user_id AND F.accepted = FALSE THEN 2
+                                    WHEN $1 = F.requesting_user_id AND F.accepted = FALSE THEN 3
                                 END AS friendship_status,
                                 ARRAY_AGG(json_build_object('id', L.id, 'name',L.name)) AS skills
                                 FROM users AS U
                                 LEFT JOIN friends AS F 
                                 ON (U.id = F.requesting_user_id OR U.id = F.receiving_user_id) 
-                                    AND (${actualUser} = F.requesting_user_id OR ${actualUser} = F.receiving_user_id) 
-                                    AND '${actualUser}' <> '${userRequested}'
+                                    AND ($1 = F.requesting_user_id OR $1 = F.receiving_user_id) 
+                                    AND $1 <> $2
                                 LEFT JOIN users_skills AS S ON U.id = S.user_id
                                 LEFT JOIN skills AS L ON S.skill_id = L.id
-                                ${onlyOne ? `WHERE U.id = ${userRequested}` : `WHERE U.id = U.id`} 
+                                ${onlyOne ? `WHERE U.id = $2` : `WHERE U.id = U.id`} 
                                 AND U.id <> '${ onlyOne ? -1 : actualUser}'
                                 ${onlyOne ? '' : generateFiltersInUsersQuery(filters)}
                                 GROUP BY U.id, F.accepted, F.receiving_user_id, F.requesting_user_id
-                                OFFSET ${pageInfo.start}
-                                LIMIT ${pageInfo.end}
+                                ${paginationSection(pageInfo)}
                                 ) AS subquery
                                 WHERE id = id ${onlyOne ? '' : generateFriendFiltersInUsersQuery(filters)}`;
 
-    return queryStatement;
+    return {queryStatement, values: [actualUser, userRequested]};
 }
 
 export async function selectUserById(userRequested, actualUser) {
-    ;
-    const queryStatement = query(true, actualUser, userRequested);
+    const queryStatement = query(true, actualUser, undefined,userRequested);
 
+    console.log(queryStatement);
     const result = await database.query(queryStatement);
     const [userModel] = await generateModel(result.rows, actualUser);
     return userModel;
 }
 
 export async function getAllUsers(actualUser, pageInfo: { start: number, end: number }, filters?) {
-    ;
     const queryStatement = query(false, actualUser, pageInfo, undefined, filters);
 
     const result = await database.query(queryStatement);
@@ -150,17 +154,17 @@ export async function getUserFriendsAmount(userId) {
     ;
     const queryStatement = `SELECT COUNT(F.accepted) AS count 
                             FROM friends AS F
-                            WHERE (F.requesting_user_id = ${userId} OR F.receiving_user_id = ${userId}) AND F.accepted = TRUE;`;
+                            WHERE (F.requesting_user_id = $1 OR F.receiving_user_id = $1) AND F.accepted = TRUE;`;
 
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [userId]);
 
     return result.rows[0].count;
 }
 
 export async function getUserByUsername(username: string) {
-    const queryStatement = `SELECT * FROM users WHERE username = '${username}';`;
+    const queryStatement = `SELECT * FROM users WHERE username = $1;`;
 
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [username]);
 
     return result.rows[0];
 }
@@ -169,9 +173,9 @@ export async function getUserLocation(userId: number) {
     const queryStatement = `SELECT L.lat, L.lng 
                             FROM users AS U
                             JOIN locations AS L ON U.location_id = L.id
-                            WHERE U.id = ${userId};`;
+                            WHERE U.id = $1;`;
 
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, userId);
 
     return result.rows[0];
 }

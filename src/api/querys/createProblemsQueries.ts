@@ -4,25 +4,27 @@ const database = getDB();
 
 async function createUbication(lat: number, lng: number) {
     const queryStatement = `INSERT INTO locations (lat, lng)
-                            SELECT ${lat}, ${lng}
-                            WHERE NOT EXISTS (SELECT 1 FROM locations WHERE lat = ${lat} AND lng = ${lng});`;
-    console.log(queryStatement);
-    await database.query(queryStatement);
+                            SELECT $1, $2
+                            WHERE NOT EXISTS (SELECT 1 FROM locations WHERE lat = $1 AND lng = $2);`;
+    const values = [lat, lng];
+    console.log(queryStatement, values);
+    await database.query(queryStatement, values);
 }
 
 async function createProblemSkillsAssociations(skills: any, problemId: any) {
     for (let index = 0; index < skills.length; index++) {
         const queryStatement = `INSERT INTO problems_skills (problem_id, skill_id)
-                                VALUES (${problemId}, ${skills[index]})
+                                VALUES ($1, $2)
                                 ON CONFLICT DO NOTHING;`;
-        await database.query(queryStatement);
+        const values = [problemId, skills[index]];
+        await database.query(queryStatement, values);
     }
 }
 
 async function deleteProblemSkillsAssociations(problemId: number) {
     const queryStatement = `DELETE FROM problems_skills AS S
-                            WHERE S.problem_id = ${problemId};`;
-    await database.query(queryStatement);
+                            WHERE S.problem_id = $1;`;
+    await database.query(queryStatement, [problemId]);
 }
 
 //TODO ponerlo como helper
@@ -30,9 +32,10 @@ export async function getUbicationId(lat: number, lng: number) {
     await createUbication(lat, lng);
     const queryStatement = `SELECT id 
                             FROM locations AS U
-                            WHERE U.lat = ${lat} AND U.lng = ${lng};`;
-
-    const result = await database.query(queryStatement);
+                            WHERE U.lat = $1 AND U.lng = $2;`;
+    
+    const values = [lat, lng];
+    const result = await database.query(queryStatement, values);
     console.log(result);
     return result.rows[0].id;
 }
@@ -41,10 +44,12 @@ export async function getUbicationId(lat: number, lng: number) {
 export async function createProblem(name: string, imageName: string, description: string, userId: number, lat: number, lng: number, skills: any) {
     const ubicationId = await getUbicationId(lat, lng);
     const queryStatement = `INSERT INTO problems (name, picture_name, description, location_id, creator_id) 
-                            VALUES ('${name}', '${imageName}', '${description}', '${ubicationId}', '${userId}')
+                            VALUES ($1, $2, $3, $4, $5)
                             RETURNING id;`;
+    
+    const values = [name, imageName, description, ubicationId, userId];
     console.log(queryStatement);
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, values);
     await createProblemSkillsAssociations(skills, result.rows[0].id);
 }
 
@@ -53,13 +58,14 @@ export async function updateProblem(name: string, description: string, lat: numb
     const ubicationId = await getUbicationId(lat, lng);
     const updatedImageName = imageName ? imageName : 'picture_name';
     const queryStatement = `UPDATE problems
-                            SET name = '${name}',
-                                picture_name = '${updatedImageName}',
-                                description = '${description}',
-                                location_id = ${ubicationId}
-                            WHERE id = ${problemId} AND creator_id = ${userId}
+                            SET name = $1,
+                                picture_name = $2,
+                                description = $3,
+                                location_id = $4
+                            WHERE id = $5 AND creator_id = $6
                             RETURNING id;`;
-    const result = await database.query(queryStatement);
+    const values = [name, updatedImageName, description, ubicationId, problemId, userId];
+    const result = await database.query(queryStatement, values);
     if (result.rows.length < 1) { return false; }
     await deleteProblemSkillsAssociations(problemId); //REGULAR QUE SEA SOLO SI ESTO SI SE ACTUZALIZO ALGO
     await createProblemSkillsAssociations(skills, problemId);

@@ -13,20 +13,22 @@ export async function deleteExpireUnverifiedUsers() {
 async function existNonVerifiedUser(email: string, username: string, cedula: number){
     let queryStatement =  ` SELECT * 
                             FROM non_verified_users AS U
-                            WHERE U.email = '${email}' OR U.username = '${username}' OR
-                            U.id_card_number = ${cedula};`;
+                            WHERE U.email = $1 OR U.username = $2 OR
+                            U.id_card_number = $3;`;
 
-    const result = await database.query(queryStatement);
+    const values = [email, username, cedula];
+    const result = await database.query(queryStatement, values);
     return result.rows[0];
 }
 
 async function existVerifiedUser(email: string, username: string, cedula: number){
     let queryStatement =  ` SELECT * 
                             FROM users AS P
-                            WHERE P.email = '${email}' OR P.username = '${username}' 
-                            OR P.id_card_number = ${cedula};`;
+                            WHERE P.email = $1 OR P.username = $2
+                            OR P.id_card_number = $3;`;
 
-    const result = await database.query(queryStatement);
+    const values = [email, username, cedula];
+    const result = await database.query(queryStatement, values);
     return result.rows[0];
 }
 
@@ -41,9 +43,9 @@ export async function existUserVerifiedOrUnverified(email: string, username: str
 export async function existReferralCode(referralCode: any) {
     const queryStatement =  `SELECT *
                              FROM users AS P
-                             WHERE P.referral_code = ${referralCode};`;
+                             WHERE P.referral_code = $1;`;
     
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [referralCode]);
     if(result.rows.length == 0) { return; }
     const {id} = result.rows[0];
     return id;
@@ -53,9 +55,9 @@ export async function existVerificationCode(verificationCode: string, email?: st
     await deleteExpireUnverifiedUsers();
     const queryStatement =  `SELECT U.username, U.referral_code
                              FROM non_verified_users AS U
-                             WHERE U.verify_code = ${verificationCode} AND U.email = '${ email ? email: 'U.email' }';`;                      
-    const result = await database.query(queryStatement);
-    console.log("CERORORORO",result); 
+                             WHERE U.verify_code = $1 AND U.email = '${ email ? '$2': 'U.email' }';`;                      
+    const result = await database.query(queryStatement, [verificationCode, email]);
+    console.log("CERORORORO VERRRRRRRRRRRRRRRRRRR",result); 
     if(result.rows.length == 0) { return; }
     return result.rows[0];
 }
@@ -63,9 +65,9 @@ export async function existVerificationCode(verificationCode: string, email?: st
 export async function existUserCredentials(cedula: number) {
     const queryStatement =  `SELECT P.id, P.username, P.hashed_password
                              FROM users AS P
-                             WHERE P.id_card_number = ${cedula};`;
+                             WHERE P.id_card_number = $1;`;
     
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [cedula]);
     if(result.rows.length == 0) { return; }
     return result.rows[0];
 }

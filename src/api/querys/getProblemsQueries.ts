@@ -56,7 +56,7 @@ function generateFiltersInProblemQuery(filters: Map<string, string>) {
 async function generateModel(rows: any, fullInfo: boolean,  actualUserId?: number) {
     const problems: any = [];
     for (const problem of rows) {
-      const imageURL = await getImageURL(problem.picture_name);
+      const imageURL = getImageURL(problem.picture_name);
         let problemModel: any = {
           id: problem.id,
           name: problem.name,
@@ -123,9 +123,10 @@ export async function selectProblems(actualUserId: number, filters: Map<string, 
                             GROUP BY P.id,
                             U.lat, U.lng
                             ${orderSection(order)}
-                            OFFSET ${pageInfo.start}
-                            LIMIT ${pageInfo.end};`;
-    const result = await database.query(queryStatement);
+                            OFFSET $1
+                            LIMIT $2;`;
+                            console.log(queryStatement);
+    const result = await database.query(queryStatement, [pageInfo.start, pageInfo.end]);
     return generateModel(result.rows, false, actualUserId);
 }
 
@@ -146,11 +147,12 @@ export async function selectProblemById(problemId: number, actualUserId: number,
                             LEFT JOIN problems_skills AS S ON P.id = S.problem_id
                             LEFT JOIN skills AS L ON S.skill_id = L.id
                             JOIN locations AS U ON U.id = P.location_id
-                            WHERE P.id = ${problemId}
+                            WHERE P.id = $1
                             GROUP BY P.id,
                             U.lat, U.lng;`;
 
-    const result = await database.query(queryStatement);
+    console.log(queryStatement);
+    const result = await database.query(queryStatement, [problemId]);
     return await generateModel(result.rows, true, actualUserId);
 }
 
@@ -172,13 +174,13 @@ export async function selectUserProblem(userId: number, filters: Map<string, str
                           LEFT JOIN skills AS L ON S.skill_id = L.id
                           JOIN locations AS U ON U.id = P.location_id
                           LEFT JOIN friends AS F ON ((P.creator_id = F.requesting_user_id OR P.creator_id = F.receiving_user_id) AND F.accepted = TRUE)
-                          WHERE P.creator_id = ${userId} ${generateFiltersInProblemQuery(filters)}
+                          WHERE P.creator_id = $3 ${generateFiltersInProblemQuery(filters)}
                           GROUP BY P.id,
                           U.lat, U.lng
                           ${orderSection(order)}
-                          OFFSET ${pageInfo.start}
-                          LIMIT ${pageInfo.end};`;
-  const result = await database.query(queryStatement);
+                          OFFSET $1
+                          LIMIT $2;`;
+  const result = await database.query(queryStatement, [pageInfo.start, pageInfo.end, userId]);
   return await generateModel(result.rows, false);
 }
 

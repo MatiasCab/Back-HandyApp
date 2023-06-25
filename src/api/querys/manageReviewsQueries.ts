@@ -56,18 +56,18 @@ export async function insertReview(description: string, score: number, problemId
     const queryStatement = `WITH updated_problem AS (
                                 UPDATE problems
                                 SET status = 'CLOSED',
-                                    solver_id =  ${reviewedUser.id},
+                                    solver_id =  $1,
                                     resolved_date = CURRENT_TIMESTAMP
-                                WHERE id = ${problemId} AND creator_id = ${creatorUserId}
+                                WHERE id = $2 AND creator_id = $3
                                 RETURNING *
                             )
                             INSERT INTO reviews (description, score, problem_id)
-                            SELECT '${description}', ${score}, ${problemId}
+                            SELECT $4, $5, $2
                             FROM users AS U, problems AS P
-                            WHERE U.id = ${creatorUserId} AND P.creator_id = U.id AND P.id = ${problemId}
+                            WHERE U.id = $3 AND P.creator_id = U.id AND P.id = $2
                             RETURNING *;`;
     console.log(queryStatement);
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [reviewedUser.id, problemId, creatorUserId, description, score, problemId]);
     const fullReviewInfo = await selectReviewById(result.rows[0].id);
     const [review] = await generateModel([fullReviewInfo], false);
     return review
@@ -90,10 +90,10 @@ export async function selectProblemReviews(problemId: number) {
                             JOIN problems AS P ON R.problem_id = P.id
                             JOIN users AS U ON P.solver_id = U.id
                             JOIN users AS S ON P.creator_id = S.id
-                            WHERE problem_id = ${problemId};`;
+                            WHERE problem_id = $1;`;
     
                             console.log(queryStatement);
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [problemId]);
     return await generateModel(result.rows, false);
 }
 
@@ -113,9 +113,9 @@ export async function selectUserReviews(userId: number) {
                             JOIN problems AS P ON R.problem_id = P.id
                             JOIN users AS U ON P.solver_id = U.id
                             JOIN users AS S ON P.creator_id = S.id
-                            WHERE U.id = ${userId};`;
+                            WHERE U.id = $1;`;
     
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [userId]);
     return await generateModel(result.rows, true);
 }
 
@@ -126,9 +126,9 @@ export async function selectUserReviewsAmount(userId: number) {
                             FROM reviews AS R
                             JOIN problems AS P ON R.problem_id = P.id
                             JOIN users AS U ON P.solver_id = U.id
-                            WHERE U.id = ${userId};`;
+                            WHERE U.id = $1;`;
     
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [userId]);
     return result.rows[0];
 }
 
@@ -148,9 +148,9 @@ export async function selectReviewById(reviewId: number) {
                             JOIN problems AS P ON R.problem_id = P.id
                             JOIN users AS U ON P.solver_id = U.id
                             JOIN users AS S ON P.creator_id = S.id
-                            WHERE R.id = ${reviewId};`;
+                            WHERE R.id = $1;`;
     
     console.log(queryStatement);
-    const result = await database.query(queryStatement);
+    const result = await database.query(queryStatement, [reviewId]);
     return result.rows[0];
 }

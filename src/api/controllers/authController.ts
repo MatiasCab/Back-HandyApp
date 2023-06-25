@@ -11,6 +11,7 @@ import { verifyIdCardNumber } from "../helpers/verificationsHelpers";
 const EXPIRE_TOKEN = 60 * 60;
 
 //TODO ARREGLAR ERRORS RESPONSE
+//FIXME ASEGURAR QUE NO HAYA ' en las consultas
 
 
 function generateHashedPassword(password: string) {
