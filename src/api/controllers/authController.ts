@@ -7,6 +7,7 @@ import { sendVerificationCode } from "../services/emailService";
 import { existReferralCode, existUserCredentials, existUserVerifiedOrUnverified, existVerificationCode } from "../querys/verificationsQueries";
 import { changeUserPassword, insertUserToVerify, insertUserVerified } from "../querys/createUsersQueries";
 import { verifyIdCardNumber } from "../helpers/verificationsHelpers";
+import { injectionsController } from "../helpers/utils";
 
 const EXPIRE_TOKEN = 60 * 60;
 
@@ -21,7 +22,7 @@ function generateHashedPassword(password: string) {
 }
 
 export const addUserToVerify = async (req: Request, res: Response) => {
-    const { username, name, lastname, email, password, CI, birthdate, referredCode } = req.body;
+    let { username, name, lastname, email, password, CI, birthdate, referredCode } = req.body;
     console.log(req.body)
     
     try {
@@ -29,7 +30,8 @@ export const addUserToVerify = async (req: Request, res: Response) => {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
-
+        [username, name, lastname, email, password, CI, birthdate, referredCode] = injectionsController([username, name, lastname, email, password, CI, birthdate, referredCode])
+        console.log([username, name, lastname, email, password, CI, birthdate, referredCode])
         const isCIValid = verifyIdCardNumber(CI);
         if(!isCIValid){
             res.status(400).send({ error: true, message: 'Id card bumber is invalid.', name: "InvalidIDCardNumber"});
@@ -66,7 +68,7 @@ export const addUserToVerify = async (req: Request, res: Response) => {
 }
 
 export const userVerification = async (req, res) => {
-    const { verificationCode, email } = req.body;
+    let { verificationCode, email } = req.body;
     console.log("cadoifo", req.body);
 
     try {
@@ -75,6 +77,8 @@ export const userVerification = async (req, res) => {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         }
+
+        [verificationCode, email] = injectionsController([verificationCode, email])
 
         if (verificationCode.toString().length < 5) {
             res.status(400).send({ error: true, message: 'Verification code have an incorrect format.', name: "InvalidVerificationCode" });
@@ -107,7 +111,7 @@ function generateJWT(userId: number, username: string) {
 }
 
 export const userLogin = async (req: Request, res: Response) => {
-    const { password, cedula } = req.body;
+    let { password, cedula } = req.body;
 
     try {
 
@@ -116,6 +120,8 @@ export const userLogin = async (req: Request, res: Response) => {
             return;
         } 
         
+        [cedula] = injectionsController([cedula]);
+
         const user = await existUserCredentials(cedula);
 
         if (user) {

@@ -1,7 +1,7 @@
 import { generateProblemsOrder } from "../helpers/defineOrderHelper";
 import { generateProblemsFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
-import { pagination } from "../helpers/utils";
+import { injectionsController, pagination } from "../helpers/utils";
 import { createProblem, updateProblem } from "../querys/createProblemsQueries";
 import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQueries";
 import { getUserLocation } from "../querys/getUsersQueries";
@@ -10,7 +10,7 @@ import { getUserLocation } from "../querys/getUsersQueries";
 //TODO CONSULTAR EL TEMA DE LAS IMAGENES, SI LES PARECE BIEN QUE NO SE BORREN EN EL BUCKET O SI HAY QUE BORRARLAS-
 
 export const createProblems = async (req, res) => {
-    const { name, image, description, lat, lng, skills } = req.body;
+    let { name, image, description, lat, lng, skills } = req.body;
     const {userId} = req.user;
     try {
 
@@ -18,6 +18,8 @@ export const createProblems = async (req, res) => {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
+ 
+        [name, description, lat, lng, skills] = injectionsController([name, description, lat, lng, skills]);
 
         const imageName = `problem_${Date.now()}.jpg`;
         await uploadBase64Image(image, imageName);
@@ -32,7 +34,7 @@ export const createProblems = async (req, res) => {
 };
 
 export const updateProblems = async (req, res) => {
-    const { name, image, description, lat, lng, skills } = req.body;
+    let { name, image, description, lat, lng, skills } = req.body;
     const problemsId = req.params.id;
     const {userId} = req.user;
     try {
@@ -41,7 +43,7 @@ export const updateProblems = async (req, res) => {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
-
+        [name, description, lat, lng, skills] = injectionsController([name, description, lat, lng, skills]);
         let imageName: any = undefined;
         if (image) {
             imageName = `problem_${Date.now()}.jpg`;

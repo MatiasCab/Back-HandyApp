@@ -1,6 +1,6 @@
 import { generateUsersFilters } from "../helpers/generateFiltersHelper";
 import { uploadBase64Image } from "../helpers/imagesHelper";
-import { pagination } from "../helpers/utils";
+import { injectionsController, pagination } from "../helpers/utils";
 import { updateUser } from "../querys/createUsersQueries";
 import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQueries";
 import { getAllUsers, selectUserById } from "../querys/getUsersQueries";
@@ -81,7 +81,7 @@ export const deleteFriendship = async (req, res) => {
 
 //FIXME optional image
 export const updateUserInfo = async (req, res) => {
-    const { image, description, lat, lng, skills } = req.body;
+    let { image, description, lat, lng, skills } = req.body;
     const { userId } = req.user;
     try {
 
@@ -89,6 +89,8 @@ export const updateUserInfo = async (req, res) => {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
+
+        [description, lat, lng, skills] = injectionsController([description, lat, lng, skills]);
 
         let imageName: any = undefined;
         if (image) {

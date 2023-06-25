@@ -1,12 +1,15 @@
+import { injectionsController } from "../helpers/utils";
 import { insertReview, selectProblemReviews, selectUserReviews } from "../querys/manageReviewsQueries";
 
 //TODO ARREGLAR ERRORS RESPONSE
 
 
 export const createReview = async (req, res) => {
-    const { description, score, problemId, solverUsername } = req.body
+    let { description, score, problemId, solverUsername } = req.body
     const { userId } = req.user
     try {
+
+        [description, score, problemId, solverUsername] = injectionsController([description, score, problemId, solverUsername]);
 
         const review = await insertReview(description, score, problemId, userId, solverUsername);
         res.status(200).send({review});

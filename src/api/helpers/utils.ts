@@ -14,3 +14,17 @@ export function pagination(paginationParams) {
     };
     return paginationInfo;
 }
+
+export function injectionsController(params: any[]) {
+    const newParams: any = [];
+    params.forEach(e => {
+        if (typeof e === "string"){
+            let str: any = e;
+            str = str.replace(/'/g, "");
+            newParams.push(str);
+        } else {
+            newParams.push(e);
+        }
+    })
+    return newParams;
+}

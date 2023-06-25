@@ -55,9 +55,9 @@ export async function existVerificationCode(verificationCode: string, email?: st
     await deleteExpireUnverifiedUsers();
     const queryStatement =  `SELECT U.username, U.referral_code
                              FROM non_verified_users AS U
-                             WHERE U.verify_code = $1 AND U.email = '${ email ? '$2': 'U.email' }';`;                      
-    const result = await database.query(queryStatement, [verificationCode, email]);
-    console.log("CERORORORO VERRRRRRRRRRRRRRRRRRR",result); 
+                             WHERE U.verify_code = $1 AND U.email = '${ email ? email: 'U.email' }';`;                      
+    const result = await database.query(queryStatement, [verificationCode]);
+    console.log("CERORORORO VERRRRRRRRRRRRRRRRRRR", queryStatement); 
     if(result.rows.length == 0) { return; }
     return result.rows[0];
 }

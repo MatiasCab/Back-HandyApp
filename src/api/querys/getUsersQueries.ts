@@ -9,6 +9,7 @@ async function generateModel(rows: any, actualUserId: number) {
         const friendsAmount = await getUserFriendsAmount(actualUserId);
         const imageURL = await getImageURL(user.profile_picture_name);
         const userLocation = await getUserLocation(user.id);
+        console.log("UBICACOPPPMOM",userLocation);
         let userModel: any = {
             id: user.id,
             firstname: user.firstname,
@@ -131,22 +132,23 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
                                 ) AS subquery
                                 WHERE id = id ${onlyOne ? '' : generateFriendFiltersInUsersQuery(filters)}`;
 
-    return {queryStatement, values: [actualUser, userRequested]};
+    return {queryStatement, values: [actualUser, userRequested ? userRequested : -1]};
 }
 
 export async function selectUserById(userRequested, actualUser) {
-    const queryStatement = query(true, actualUser, undefined,userRequested);
+    const queryInfo = query(true, actualUser, undefined,userRequested);
 
-    console.log(queryStatement);
-    const result = await database.query(queryStatement);
+    console.log(queryInfo.values);
+    const result = await database.query(queryInfo.queryStatement, queryInfo.values);
     const [userModel] = await generateModel(result.rows, actualUser);
     return userModel;
 }
 
 export async function getAllUsers(actualUser, pageInfo: { start: number, end: number }, filters?) {
-    const queryStatement = query(false, actualUser, pageInfo, undefined, filters);
+    const queryInfo = query(false, actualUser, pageInfo, undefined, filters);
 
-    const result = await database.query(queryStatement);
+    console.log(queryInfo);
+    const result = await database.query(queryInfo.queryStatement, queryInfo.values);
     return await generateModel(result.rows, actualUser);
 }
 
@@ -175,7 +177,7 @@ export async function getUserLocation(userId: number) {
                             JOIN locations AS L ON U.location_id = L.id
                             WHERE U.id = $1;`;
 
-    const result = await database.query(queryStatement, userId);
+    const result = await database.query(queryStatement, [userId]);
 
     return result.rows[0];
 }
