@@ -78,15 +78,15 @@ export async function insertUserVerified(verificationCode: string, email: string
 
 export async function updateUser(description: string, lat: number, lng: number, skills: any, userId: number, pictureName?: string) {
     const ubicationId = await getUbicationId(lat, lng);
-    const picture = pictureName ? pictureName : 'profile_picture_name';
+    const picture =  'profile_picture_name';
     const queryStatement = `UPDATE users
-                            SET profile_picture_name = $1,
-                                description = $2,
-                                location_id = $3
-                            WHERE id = $4
+                            SET profile_picture_name = ${pictureName ? `'${pictureName}'` : `${picture}`},
+                                description = $1,
+                                location_id = $2
+                            WHERE id = $3
                             RETURNING id;`;
     console.log(queryStatement);
-    const values = [picture, description, ubicationId, userId];
+    const values = [description, ubicationId, userId];
     const result = await database.query(queryStatement, values);
     if (result.rows.length < 1) { return; }
     await deleteUserSkillsAssociations(userId);
