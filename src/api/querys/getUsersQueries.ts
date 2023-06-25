@@ -21,7 +21,7 @@ async function generateModel(rows: any, actualUserId: number) {
             lat: null,
             lng: null,
             profileImage: imageURL ? imageURL : null,
-            fiendshipStatus: actualUserId != user.id ? user.friendship_status : null,
+            friendshipStatus: actualUserId != user.id ? user.friendship_status : null,
             skills: user.skills[0].id != null ? user.skills : [],
             friendsAmount: friendsAmount!.toString(),
             CI: null
