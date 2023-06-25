@@ -52,7 +52,7 @@ async function createNonVerifiedUsersTable() {
                             referral_code INT NOT NULL,
                             email VARCHAR (50) NOT NULL,
                             hashed_password VARCHAR (100) NOT NULL,
-                            verify_code INT NOT NULL,
+                            verify_code VARCHAR (6) NOT NULL,
                             verify_code_expiration TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '1 day'),
                             FOREIGN KEY (referral_code) REFERENCES users (referral_code)
                         );`;

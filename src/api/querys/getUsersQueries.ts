@@ -29,8 +29,8 @@ async function generateModel(rows: any, actualUserId: number) {
 
         if (userModel.id == actualUserId) {
             userModel.CI = user.id_card_number;
-            userModel.lat = userLocation.lat;
-            userModel.lng = userLocation.lng;
+            userModel.lat = userLocation?.lat;
+            userModel.lng = userLocation?.lng;
             
         }
         users.push(userModel);
@@ -137,7 +137,7 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
 }
 
 export async function selectUserById(userRequested, actualUser) {
-    const queryInfo = query(true, actualUser, undefined,userRequested);
+    const queryInfo = query(true, actualUser, undefined, userRequested);
 
     console.log(queryInfo.values);
     const result = await database.query(queryInfo.queryStatement, queryInfo.values);
