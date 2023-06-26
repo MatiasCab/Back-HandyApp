@@ -29,7 +29,6 @@ export function generateProblemsFilters(queryFilters, actualUserId?) {
     filtersList.set('skills', skillsFilter(queryFilters.skills));
     filtersList.set('creator', creatorFilter(queryFilters.creator));
 
-console.log(filtersList);
     return filtersList;
 }
 
@@ -41,7 +40,6 @@ export function generateUsersFilters(queryFilters, actualUserId?) {
     filtersList.set('skills', skillsFilter(queryFilters.skills));
     filtersList.set('relationship', creatorFilter(queryFilters.relationship));
 
-console.log(filtersList);
     return filtersList;
 }
 

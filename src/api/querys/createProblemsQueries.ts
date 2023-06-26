@@ -7,7 +7,7 @@ async function createUbication(lat: number, lng: number) {
                             SELECT $1, $2
                             WHERE NOT EXISTS (SELECT 1 FROM locations WHERE lat = $1 AND lng = $2);`;
     const values = [lat, lng];
-    console.log(queryStatement, values);
+
     await database.query(queryStatement, values);
 }
 
@@ -27,7 +27,7 @@ async function deleteProblemSkillsAssociations(problemId: number) {
     await database.query(queryStatement, [problemId]);
 }
 
-//TODO ponerlo como helper
+
 export async function getUbicationId(lat: number, lng: number) {
     await createUbication(lat, lng);
     const queryStatement = `SELECT id 
@@ -36,7 +36,7 @@ export async function getUbicationId(lat: number, lng: number) {
     
     const values = [lat, lng];
     const result = await database.query(queryStatement, values);
-    console.log(result);
+
     return result.rows[0].id;
 }
 
@@ -48,12 +48,12 @@ export async function createProblem(name: string, imageName: string, description
                             RETURNING id;`;
     
     const values = [name, imageName, description, ubicationId, userId];
-    console.log(queryStatement);
+
     const result = await database.query(queryStatement, values);
     await createProblemSkillsAssociations(skills, result.rows[0].id);
 }
 
-//TODO fijarse si funciona con el tema de la imagen
+
 export async function updateProblem(name: string, description: string, lat: number, lng: number, skills: any, problemId: number, userId: number,  imageName?: string) {
     const ubicationId = await getUbicationId(lat, lng);
     const updatedImageName = imageName ? imageName : 'picture_name';

@@ -11,10 +11,6 @@ import { injectionsController } from "../helpers/utils";
 
 const EXPIRE_TOKEN = 60 * 60;
 
-//TODO ARREGLAR ERRORS RESPONSE
-//FIXME ASEGURAR QUE NO HAYA ' en las consultas
-
-
 function generateHashedPassword(password: string) {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
@@ -23,7 +19,6 @@ function generateHashedPassword(password: string) {
 
 export const addUserToVerify = async (req: Request, res: Response) => {
     let { username, name, lastname, email, password, CI, birthdate, referredCode } = req.body;
-    console.log(req.body)
     
     try {
         if (!username || !name || !lastname || !email || !password || !birthdate || !CI || !referredCode) {
@@ -31,7 +26,6 @@ export const addUserToVerify = async (req: Request, res: Response) => {
             return;
         } 
         [username, name, lastname, email, password, CI, birthdate, referredCode] = injectionsController([username, name, lastname, email, password, CI, birthdate, referredCode])
-        console.log([username, name, lastname, email, password, CI, birthdate, referredCode])
         const isCIValid = verifyIdCardNumber(CI);
         if(!isCIValid){
             res.status(400).send({ error: true, message: 'Id card bumber is invalid.', name: "InvalidIDCardNumber"});
@@ -62,14 +56,13 @@ export const addUserToVerify = async (req: Request, res: Response) => {
         res.status(200).send({ error: false, message: "Verification code send." });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error", name: 'ServerError' });
     }
 }
 
 export const userVerification = async (req, res) => {
     let { verificationCode, email } = req.body;
-    console.log("cadoifo", req.body);
 
     try {
 
@@ -95,7 +88,7 @@ export const userVerification = async (req, res) => {
         res.status(200).send({ error: false, message: 'User created!!' });
 
     } catch (e) {
-        console.log(e)
+        ""
         res.status(500).send({ error: true, message: "Internal server error", name: 'ServerError' });
     }
 }
@@ -149,7 +142,7 @@ export const userLogin = async (req: Request, res: Response) => {
         res.status(400).send({ error: true, message: 'Wrong username or password.', name: 'InvalidUsernameOrPassword' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error", name: 'ServerError' });
     }
 }
@@ -164,7 +157,7 @@ export const changePassword = async (req, res) => {
         res.status(200).send({ error: false, message: 'Password updated!!' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error getting problem", name: 'ServerError' });
     }
 };

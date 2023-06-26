@@ -2,14 +2,13 @@ import { getImageURL } from "../helpers/imagesHelper";
 import { getDB } from "../services/sqlDatabase";
 
 const database = getDB();
-//FIXME REGULAR LO DE LAS COMAS EN LAS CONSULTAS
+
 async function generateModel(rows: any, actualUserId: number) {
     const users: any = [];
     for (const user of rows) {
         const friendsAmount = await getUserFriendsAmount(actualUserId);
         const imageURL = await getImageURL(user.profile_picture_name);
         const userLocation = await getUserLocation(user.id);
-        console.log("UBICACOPPPMOM",userLocation);
         let userModel: any = {
             id: user.id,
             firstname: user.firstname,
@@ -40,12 +39,10 @@ async function generateModel(rows: any, actualUserId: number) {
 
 function nameFilter(value) {
     if (value == '') return '';
-    console.log(value);
     return ` AND (U.firstname ILIKE '%${value}%' OR U.lastname ILIKE '%${value}%')`;
 }
 
 function skillsFilter(value) {
-    console.log("HOLAAAAAAAA",value);
     let statement = ` AND NOT EXISTS (
                         SELECT 1
                         FROM skills AS SK
@@ -87,7 +84,7 @@ function generateFiltersInUsersQuery(filters: Map<string, string>) {
 
 function generateFriendFiltersInUsersQuery(filters: Map<string, string>) {
     let queryFilteredStatement = '';
-    queryFilteredStatement += friendsFilter(filters.get('relationship')); //TODO filtro de amigos.
+    queryFilteredStatement += friendsFilter(filters.get('relationship')); 
 
     return queryFilteredStatement;
 }
@@ -140,7 +137,6 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
 export async function selectUserById(userRequested, actualUser) {
     const queryInfo = query(true, actualUser, undefined, userRequested);
 
-    console.log(queryInfo.values);
     const result = await database.query(queryInfo.queryStatement, queryInfo.values);
     const [userModel] = await generateModel(result.rows, actualUser);
     return userModel;
@@ -149,7 +145,6 @@ export async function selectUserById(userRequested, actualUser) {
 export async function getAllUsers(actualUser, pageInfo: { start: number, end: number }, filters?) {
     const queryInfo = query(false, actualUser, pageInfo, undefined, filters);
 
-    console.log(queryInfo);
     const result = await database.query(queryInfo.queryStatement, queryInfo.values);
     return await generateModel(result.rows, actualUser);
 }

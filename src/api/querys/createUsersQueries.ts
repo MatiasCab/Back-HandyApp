@@ -48,7 +48,6 @@ async function updateReferrerID(verificationCode: string, email: string) {
                             WHERE username = $2;`
     
     const values = [referrerId, username];
-    console.log(queryStatement);
     await database.query(queryStatement,values);
 }
 
@@ -59,13 +58,12 @@ export async function insertUserToVerify(cedula: number, username: string,	name:
                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`;
     
     const values = [cedula, username, name, lastname, birthday, referralCode, email, hashedPassword, verificationCode, expireDate];
-    console.log(queryStatement);
     await database.query(queryStatement, values);
 }
 
 export async function insertUserVerified(verificationCode: string, email: string) {
     const referralCode = await generateReferralCode();
-    console.log(referralCode);
+
     const queryStatement = `INSERT INTO users (id_card_number, username, firstname, lastname, birthday, email, hashed_password, referral_code)
                             SELECT id_card_number, username, firstname, lastname, birthday, email, hashed_password, $1
                             FROM non_verified_users AS U
@@ -85,7 +83,7 @@ export async function updateUser(description: string, lat: number, lng: number, 
                                 location_id = $2
                             WHERE id = $3
                             RETURNING id;`;
-    console.log(queryStatement);
+
     const values = [description, ubicationId, userId];
     const result = await database.query(queryStatement, values);
     if (result.rows.length < 1) { return; }

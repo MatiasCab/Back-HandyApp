@@ -15,7 +15,7 @@ export async function acceptUserFriendship(otherUserId: number, actualUserId: nu
     const queryStatement = `UPDATE friends
                             SET accepted = TRUE
                             WHERE requesting_user_id = $1 AND receiving_user_id = $2;`;
-    console.log(queryStatement);
+
     await database.query(queryStatement, [otherUserId, actualUserId]);
 }
 
@@ -23,6 +23,6 @@ export async function deleteUserFriendship(otherUserId: number, actualUserId: nu
     const queryStatement = `DELETE FROM friends
                             WHERE (requesting_user_id = $1 AND receiving_user_id = $2) 
                             OR (requesting_user_id = $2 AND receiving_user_id = $1);`;
-    console.log(queryStatement);
+
     await database.query(queryStatement, [otherUserId, actualUserId]);
 }

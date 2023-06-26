@@ -5,7 +5,6 @@ import { updateUser } from "../querys/createUsersQueries";
 import { acceptUserFriendship, createUserFriendship, deleteUserFriendship } from "../querys/friendsRequestQueries";
 import { getAllUsers, selectUserById } from "../querys/getUsersQueries";
 
-//TODO ARREGLAR ERRORS RESPONSE
 
 export const getUsers = async (req, res) => {
     const { userId } = req.user
@@ -18,7 +17,7 @@ export const getUsers = async (req, res) => {
         res.status(200).send({users});
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
     }
 };
@@ -32,7 +31,7 @@ export const getUserById = async (req, res) => {
         res.status(200).send({user});
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
     }
 };
@@ -46,7 +45,7 @@ export const sendFriendRequest = async (req, res) => {
         res.status(200).send({ error: false, message: 'Friendship request send!!' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error sending friend request", name: 'ServerError' });
     }
 };
@@ -60,7 +59,7 @@ export const acceptFriendRequest = async (req, res) => {
         res.status(200).send({ error: false, message: 'Friendship request accepted!!' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error accepting userfrienship", name: 'ServerError' });
     }
 };
@@ -74,16 +73,14 @@ export const deleteFriendship = async (req, res) => {
         res.status(200).send({ error: false, message: 'Friendship deleted!!' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error deleting user friendship", name: 'ServerError' });
     }
 };
 
-//FIXME optional image
 export const updateUserInfo = async (req, res) => {
     let { image, description, lat, lng, skills } = req.body;
     const { userId } = req.user;
-    console.log(req.body);
     try {
 
         if (!lat || !lng) {
@@ -108,7 +105,7 @@ export const updateUserInfo = async (req, res) => {
         res.status(200).send({ error: false, message: 'User updated!!' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error updating user", name: 'ServerError' });
     }
 };

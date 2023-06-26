@@ -1,5 +1,4 @@
 import { getBucket, getBucketName } from "../services/imagesStorage";
-//TODO CONSULTAR EL TEMA DE QUE SIEMPRE PEGA AL STORAGE
 
 export async function existImageController(imageName: string) {
     const [exist] = await getBucket()
@@ -30,7 +29,6 @@ function generatePublicImageUrl(imageName: string) {
 export function getImageURL(imageName: string) {
     if (!imageName) return undefined;
 
-    console.log("NOMBRE IMAGENNN",imageName);
     return generatePublicImageUrl(imageName);
 };
 
@@ -38,7 +36,6 @@ export async function getSignetImageURL(imageName: string) {
     if (!imageName) return undefined;
     const existImage = await existImageController(imageName);
     if(!existImage) return undefined;
-    console.log("NOMBRE IMAGENNN",imageName);
     return generateSignedImageURL(imageName);
 };
 

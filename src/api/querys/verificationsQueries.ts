@@ -1,6 +1,5 @@
 import { getDB } from "../services/sqlDatabase";
 
-//FIXME revisar tema de veriifcation code con el metdod de reffered id.
 
 const database = getDB();
 
@@ -57,7 +56,6 @@ export async function existVerificationCode(verificationCode: string, email?: st
                              FROM non_verified_users AS U
                              WHERE U.verify_code = $1 AND U.email = '${ email ? email: 'U.email' }';`;                      
     const result = await database.query(queryStatement, [verificationCode]);
-    console.log("CERORORORO VERRRRRRRRRRRRRRRRRRR", queryStatement); 
     if(result.rows.length == 0) { return; }
     return result.rows[0];
 }

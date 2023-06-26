@@ -25,7 +25,6 @@ export async function generateLocationImage(lat, lng) {
     //const locationMapURL = `${url}&map_id=dd44d28a312be6da`;
     const locationMapURL = `${url}&path=fillcolor:0x0000ff|weight:1|fillcolor:0x0000ff|enc:circle_radius:1000`;
 
-    console.log(locationMapURL);
     const response = await axios.request({
         method: 'GET',
         url: locationMapURL,
@@ -38,7 +37,7 @@ export async function generateLocationImage(lat, lng) {
 export async function getLocationImage(lat, lng) {
     const imageName = `${lat},${lng}.jpg`;
     
-    const existImage = await existImageController(imageName); //TODO preguntar si les parece bien esto
+    const existImage = await existImageController(imageName);
     if(existImage){
         return getImageURL(imageName);
     };

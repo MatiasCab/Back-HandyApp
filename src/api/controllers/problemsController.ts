@@ -6,8 +6,6 @@ import { createProblem, updateProblem } from "../querys/createProblemsQueries";
 import { selectProblemById, selectProblems, selectUserProblem } from "../querys/getProblemsQueries";
 import { getUserLocation } from "../querys/getUsersQueries";
 
-//TODO ARREGLAR ERRORS RESPONSE
-//TODO CONSULTAR EL TEMA DE LAS IMAGENES, SI LES PARECE BIEN QUE NO SE BORREN EN EL BUCKET O SI HAY QUE BORRARLAS-
 
 export const createProblems = async (req, res) => {
     let { name, image, description, lat, lng, skills } = req.body;
@@ -28,7 +26,7 @@ export const createProblems = async (req, res) => {
         res.status(200).send({ error: false, message: 'Problem created!!' });
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error creating problems", name: 'ServerError' });
     }
 };
@@ -59,7 +57,7 @@ export const updateProblems = async (req, res) => {
         }
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error creating problems", name: 'ServerError' });
     }
 };
@@ -77,7 +75,7 @@ export const getProblems = async (req, res) => {
         res.status(200).send({problems});
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
     }
 };
@@ -94,7 +92,7 @@ export const getUserProblems = async (req, res) => {
         const problems = await selectUserProblem(otherUserId, filters, paginationInfo, userLocation, order);
         res.status(200).send({problems});
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
     }
 };
@@ -109,7 +107,7 @@ export const getProblembyId = async (req, res) => {
         res.status(200).send({problem});
 
     } catch (e) {
-        console.log(e);
+        
         res.status(500).send({ error: true, message: "Internal server error getting problem", name: 'ServerError' });
     }
 };

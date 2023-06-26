@@ -4,12 +4,9 @@ import { getUserByUsername} from "./getUsersQueries";
 const database = getDB();
 
 
-//TODO SEPARARLO PARA QUE ESTE MAS LINDO.
 async function generateModel(rows: any, withFullInfo) {
     const reviews: any = [];
-    console.log(rows);
     for (const fullReviewInfo of rows) {
-        console.log(fullReviewInfo);
         let reviewModel: any = {
             id: fullReviewInfo.id,
             description: fullReviewInfo.description,
@@ -34,8 +31,6 @@ async function generateModel(rows: any, withFullInfo) {
     let reviewsInfo = reviews;
     if (withFullInfo) {
         const reviewsAmount = await selectUserReviewsAmount(rows[0].solverid);
-        console.log(reviewsAmount);
-        console.log(reviewsAmount.happyreviews);
         reviewsInfo = {
             good: reviewsAmount.happyreviews!.toString(),
             mid: reviewsAmount.mediumreviews!.toString(),
@@ -66,14 +61,12 @@ export async function insertReview(description: string, score: number, problemId
                             FROM users AS U, problems AS P
                             WHERE U.id = $3 AND P.creator_id = U.id AND P.id = $2
                             RETURNING *;`;
-    console.log(queryStatement);
-    const result = await database.query(queryStatement, [reviewedUser.id, problemId, creatorUserId, description, score, problemId]);
+    const result = await database.query(queryStatement, [reviewedUser.id, problemId, creatorUserId, description, score]);
     const fullReviewInfo = await selectReviewById(result.rows[0].id);
     const [review] = await generateModel([fullReviewInfo], false);
     return review
 }
 
-//TODO REDURCIR ESTO
 export async function selectProblemReviews(problemId: number) {
     const queryStatement = ` SELECT R.id,
                                     R.description,
@@ -92,7 +85,6 @@ export async function selectProblemReviews(problemId: number) {
                             JOIN users AS S ON P.creator_id = S.id
                             WHERE problem_id = $1;`;
     
-                            console.log(queryStatement);
     const result = await database.query(queryStatement, [problemId]);
     return await generateModel(result.rows, false);
 }
@@ -150,7 +142,6 @@ export async function selectReviewById(reviewId: number) {
                             JOIN users AS S ON P.creator_id = S.id
                             WHERE R.id = $1;`;
     
-    console.log(queryStatement);
     const result = await database.query(queryStatement, [reviewId]);
     return result.rows[0];
 }

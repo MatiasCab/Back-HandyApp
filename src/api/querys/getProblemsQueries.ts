@@ -48,7 +48,7 @@ function generateFiltersInProblemQuery(filters: Map<string, string>) {
   queryFilteredStatement += statusFilter(filters.get('status'));
   queryFilteredStatement += nameFilter(filters.get('name'));
   queryFilteredStatement += skillsFilter(filters.get('skills'));
-  queryFilteredStatement += friendsFilter(filters.get('creator'), filters.get('actualUserId')!); //TODO filtro de amigos.
+  queryFilteredStatement += friendsFilter(filters.get('creator'), filters.get('actualUserId')!);
 
   return queryFilteredStatement;
 }
@@ -61,7 +61,7 @@ async function generateModel(rows: any, fullInfo: boolean,  actualUserId?: numbe
           id: problem.id,
           name: problem.name,
           postedDate: problem.created_date,
-          imageURL: imageURL ? imageURL : null, //TODO IMAGEN PROBLEMAS
+          imageURL: imageURL ? imageURL : null,
           status: problem.status,
           resolvedDate: problem.resolved_date,
           lat: problem.lat,
@@ -99,8 +99,6 @@ function orderSection(order) {
   return '';
 }
 
-
-//TODO ARREGLAQR LAS QUERIES PARA QUE SEA SOLA UNA.
 export async function selectProblems(actualUserId: number, filters: Map<string, string>, pageInfo: { start: number, end: number }, userLocation?: {lat: number, lng: number}, order?: string) {;
     const queryStatement = ` SELECT P.id, 
                                     P.name, 
@@ -125,7 +123,6 @@ export async function selectProblems(actualUserId: number, filters: Map<string, 
                             ${orderSection(order)}
                             OFFSET $1
                             LIMIT $2;`;
-                            console.log(queryStatement);
     const result = await database.query(queryStatement, [pageInfo.start, pageInfo.end]);
     return generateModel(result.rows, false, actualUserId);
 }
@@ -151,7 +148,6 @@ export async function selectProblemById(problemId: number, actualUserId: number,
                             GROUP BY P.id,
                             U.lat, U.lng;`;
 
-    console.log(queryStatement);
     const result = await database.query(queryStatement, [problemId]);
     return await generateModel(result.rows, true, actualUserId);
 }
