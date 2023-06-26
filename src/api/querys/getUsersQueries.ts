@@ -6,7 +6,7 @@ const database = getDB();
 async function generateModel(rows: any, actualUserId: number) {
     const users: any = [];
     for (const user of rows) {
-        const friendsAmount = await getUserFriendsAmount(actualUserId);
+        const friendsAmount = await getUserFriendsAmount(user.id);
         const imageURL = await getImageURL(user.profile_picture_name);
         const userLocation = await getUserLocation(user.id);
         let userModel: any = {
