@@ -110,7 +110,7 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
                                 U.admission_date,
                                 U.description,
                                 U.profile_picture_name,
-                                U.referral_code
+                                U.referral_code,
                                 CASE
                                     WHEN F.accepted IS NULL THEN 0
                                     WHEN F.accepted IS NOT NULL AND F.accepted = TRUE THEN 1
@@ -133,6 +133,7 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
                                 ) AS subquery
                                 WHERE id = id ${onlyOne ? '' : generateFriendFiltersInUsersQuery(filters)}`;
 
+    console.log(queryStatement);
     return {queryStatement, values: [actualUser, userRequested ? userRequested : -1]};
 }
 
