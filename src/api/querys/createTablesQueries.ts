@@ -30,7 +30,7 @@ async function createUsersTable() {
                             referred_id INT,
                             location_id INT,
                             description VARCHAR(400) DEFAULT 'Bienvenido a Handy App.',
-                            profile_picture_name VARCHAR(30),
+                            profile_picture_name VARCHAR(30) DEFAULT 'USER_PLACEHOLDER.jpg',
                             email VARCHAR (50) NOT NULL,
                             hashed_password VARCHAR (100) NOT NULL,
                             admission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
