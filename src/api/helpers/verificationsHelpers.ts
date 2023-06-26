@@ -18,6 +18,6 @@ export function verifyIdCardNumber(number){
         firstDigits = Math.floor(firstDigits / 10);
     }
     
-    const newVerifiedDigit = 10 - (sum % 10);
+    const newVerifiedDigit = (10 - (sum % 10)) % 10;
     return verifiedDigit == newVerifiedDigit;
 }
