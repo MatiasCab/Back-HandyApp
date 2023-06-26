@@ -18,7 +18,7 @@ export const getUsers = async (req, res) => {
 
     } catch (e) {
         
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error getting users", name: 'ServerError' });
     }
 };
 
@@ -31,7 +31,7 @@ export const getUserById = async (req, res) => {
         res.status(200).send({user});
 
     } catch (e) {
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error getting users", name: 'ServerError' });
     }
 };
 
@@ -59,7 +59,7 @@ export const acceptFriendRequest = async (req, res) => {
 
     } catch (e) {
         
-        res.status(500).send({ error: true, message: "Internal server error accepting userfrienship", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error accepting user frienship", name: 'ServerError' });
     }
 };
 

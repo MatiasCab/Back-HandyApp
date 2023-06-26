@@ -26,7 +26,7 @@ export const getProblemReviews = async (req, res) => {
 
     } catch (e) {
         
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error getting reviews by problems", name: 'ServerError' });
     }
 };
 
@@ -39,6 +39,6 @@ export const getUserReviews = async (req, res) => {
 
     } catch (e) {
         
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error getting reviews by users", name: 'ServerError' });
     }
 };

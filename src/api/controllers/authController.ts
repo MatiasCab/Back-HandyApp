@@ -158,6 +158,6 @@ export const changePassword = async (req, res) => {
 
     } catch (e) {
         
-        res.status(500).send({ error: true, message: "Internal server error getting problem", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error change password", name: 'ServerError' });
     }
 };

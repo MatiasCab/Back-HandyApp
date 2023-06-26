@@ -10,6 +10,6 @@ export const getSkills = async (_req, res) => {
 
     } catch (e) {
         
-        res.status(500).send({ error: true, message: "Internal server error getting problems", name: 'ServerError' });
+        res.status(500).send({ error: true, message: "Internal server error getting skills", name: 'ServerError' });
     }
 };
