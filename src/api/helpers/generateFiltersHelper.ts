@@ -1,6 +1,7 @@
 function statusFilter(param){
     if(param == 'resolved') return 'CLOSED';
-    return 'OPEN';
+    if(param == 'pendent') return 'OPEN';
+    return 'all';
 }
 
 function nameFilter(param){

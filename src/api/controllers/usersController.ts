@@ -81,6 +81,7 @@ export const deleteFriendship = async (req, res) => {
 export const updateUserInfo = async (req, res) => {
     let { image, description, lat, lng, skills } = req.body;
     const { userId } = req.user;
+    console.log(req.body);
     try {
 
         if (!lat || !lng) {
@@ -105,7 +106,7 @@ export const updateUserInfo = async (req, res) => {
         res.status(200).send({ error: false, message: 'User updated!!' });
 
     } catch (e) {
-        
+        console.log(e);
         res.status(500).send({ error: true, message: "Internal server error updating user", name: 'ServerError' });
     }
 };

@@ -73,7 +73,7 @@ export const userVerification = async (req, res) => {
 
         [verificationCode, email] = injectionsController([verificationCode, email])
 
-        if (verificationCode.toString().length < 5) {
+        if (verificationCode.toString().length < 3) {
             res.status(400).send({ error: true, message: 'Verification code have an incorrect format.', name: "InvalidVerificationCode" });
             return;
         }

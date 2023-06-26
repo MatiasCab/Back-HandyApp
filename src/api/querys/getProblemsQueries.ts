@@ -6,8 +6,9 @@ import { selectUserById } from "./getUsersQueries";
 const database = getDB();
 
 function statusFilter(value) {
-  if(value == 'OPEN') return '';
-  return ` AND P.status = '${value}'`;
+  if(value == 'OPEN') return ` AND P.status = '${value}'`;
+  if(value == 'CLOSED') return ` AND P.status = '${value}'`;
+  return ``;
 }
 
 function nameFilter(value) {

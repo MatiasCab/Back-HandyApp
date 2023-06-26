@@ -1,4 +1,4 @@
-//import * as nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import dotenv from "dotenv";
 //import { google } from 'googleapis';
 import { existVerificationCode } from "../querys/verificationsQueries";
@@ -40,6 +40,19 @@ dotenv.config();
     return transporter;
 }
  */
+const user = process.env.MAILER_EMAIL;
+const pass = process.env.MAILER_PASSWORD;
+
+const transporter = nodemailer.createTransport({
+    service: 'Outlook365',
+    auth: {
+        user: user,
+        pass: pass
+    },tls: {
+        rejectUnauthorized: false
+    }
+});
+
 async function createVerificationCode() {
     let attempts = 0;
     while (attempts < 10000) {
@@ -55,20 +68,18 @@ async function createVerificationCode() {
 }
 
 export async function sendVerificationCode(email: string) {
-    //const transporter = await createTransporter();
     const verificationCode = await createVerificationCode();
-    if(email)
 
     if (verificationCode == -1) {
         return verificationCode;
     }
 
-    // transporter.sendMail({
-    //     from: `"Handy 🖐️" <${sourceEmail}>`,
-    //     to: `${email}`,
-    //     subject: "Codigo de verificación ✔",
-    //     text: `Su codigo de verificacion es: ${verificationCode}`
-    // });
+    transporter.sendMail({
+        from: `"Handy 🖐️" <${user}>`,
+        to: `${email}`,
+        subject: "Codigo de verificación ✔",
+        text: `Su codigo de verificacion es: ${verificationCode}`
+    });
 
     return verificationCode;
 }

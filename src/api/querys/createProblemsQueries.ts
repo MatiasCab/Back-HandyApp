@@ -56,15 +56,15 @@ export async function createProblem(name: string, imageName: string, description
 
 export async function updateProblem(name: string, description: string, lat: number, lng: number, skills: any, problemId: number, userId: number,  imageName?: string) {
     const ubicationId = await getUbicationId(lat, lng);
-    const updatedImageName = imageName ? imageName : 'picture_name';
+    const picture =  'picture_name';
     const queryStatement = `UPDATE problems
                             SET name = $1,
-                                picture_name = $2,
-                                description = $3,
-                                location_id = $4
-                            WHERE id = $5 AND creator_id = $6
+                                picture_name = ${imageName ? `'${imageName}'` : `${picture}`},
+                                description = $2,
+                                location_id = $3
+                            WHERE id = $4 AND creator_id = $5
                             RETURNING id;`;
-    const values = [name, updatedImageName, description, ubicationId, problemId, userId];
+    const values = [name, description, ubicationId, problemId, userId];
     const result = await database.query(queryStatement, values);
     if (result.rows.length < 1) { return false; }
     await deleteProblemSkillsAssociations(problemId); //REGULAR QUE SEA SOLO SI ESTO SI SE ACTUZALIZO ALGO
