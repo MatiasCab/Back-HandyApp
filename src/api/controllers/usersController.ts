@@ -83,21 +83,27 @@ export const deleteFriendship = async (req, res) => {
 export const updateUserInfo = async (req, res) => {
     let { image, description, lat, lng, skills } = req.body;
     const { userId } = req.user;
+    console.log(req.body);
     try {
 
-        if (!description || !lat || !lng || !skills) {
+        if (!lat || !lng) {
             res.status(400).send({ error: true, message: 'Fields cannot be null' });
             return;
         } 
 
-        [description, lat, lng, skills] = injectionsController([description, lat, lng, skills]);
+        [description, lat, lng] = injectionsController([description, lat, lng]);
 
         let imageName: any = undefined;
         if (image) {
             imageName = `user_${Date.now()}.jpg`;
             await uploadBase64Image(image, imageName);
         }
-
+        if(!skills) {
+            skills = []
+        }
+        if(!description) {
+            description = '';
+        }
         await updateUser(description, lat, lng, skills, userId, imageName);
         res.status(200).send({ error: false, message: 'User updated!!' });
 

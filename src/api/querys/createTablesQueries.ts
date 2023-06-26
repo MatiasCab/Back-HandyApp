@@ -29,7 +29,7 @@ async function createUsersTable() {
                             referral_code INT UNIQUE NOT NULL,
                             referred_id INT,
                             location_id INT,
-                            description VARCHAR(400),
+                            description VARCHAR(400) DEFAULT 'Bienvenido a Handy App',
                             profile_picture_name VARCHAR(30),
                             email VARCHAR (50) NOT NULL,
                             hashed_password VARCHAR (100) NOT NULL,
