@@ -19,6 +19,7 @@ async function generateModel(rows: any, actualUserId: number) {
             description: user.description,
             lat: null,
             lng: null,
+            referralCode: user.referral_code,
             profileImage: imageURL ? imageURL : null,
             friendshipStatus: actualUserId != user.id ? user.friendship_status : null,
             skills: user.skills[0].id != null ? user.skills : [],
@@ -109,6 +110,7 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
                                 U.admission_date,
                                 U.description,
                                 U.profile_picture_name,
+                                U.referral_code
                                 CASE
                                     WHEN F.accepted IS NULL THEN 0
                                     WHEN F.accepted IS NOT NULL AND F.accepted = TRUE THEN 1
