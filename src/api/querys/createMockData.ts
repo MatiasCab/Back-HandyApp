@@ -12,8 +12,8 @@ async function createLocationsMock() {
 
 async function createUsersMock() {
     const queryStatement = `INSERT INTO users (id_card_number, username, firstname, lastname, birthday, referral_code, location_id, email, hashed_password, description, id)
-                            VALUES (1234567, 'admin', 'Admin', 'AdminJr', '2002-09-30', 1, 1, 'admin@example.com', '12345678', 'Descripción de ejemplo de admin', 2),
-                                    (54622357, 'Prueba 1', 'Prueba', 'PruebaJr', '2002-09-30', 2, 1, 'prueba@example.com', '12345678', 'Descripción de ejemplo de Prueba', 3)
+                            VALUES (1234567, '', 'Admin', 'AdminJr', '2002-09-30', 1, 1, 'admin@example.com', '12345678', 'Descripción de ejemplo de admin'),
+                                    (54622357, 'Pepe', 'Pandolfo', 'Petrosca', '2002-09-30', 2, 1, 'pepe@example.com', '12345678', 'Soy una persona que le gusta mucho ayudar.')
                             
                             ON CONFLICT DO NOTHING;`;
                         
@@ -22,33 +22,53 @@ async function createUsersMock() {
 
 async function createSkillsMock(){
     const queryStatement = `INSERT INTO skills (name)
-                            VALUES ('Cocina'),
-                                ('Limpieza'),
-                                ('Jardinería'),
-                                ('Electrodomésticos'),
-                                ('Costura'),
-                                ('Pintura'),
-                                ('Decoración'),
-                                ('Plomería'),
-                                ('Carpintería'),
-                                ('Estanterías'),
-                                ('Grifos'),
-                                ('Armarios'),
-                                ('Reparaciones'),
-                                ('Poda'),
-                                ('Ventanas'),
-                                ('Cortinas'),
-                                ('Muebles'),
-                                ('Cerraduras'),
-                                ('Montaje'),
-                                ('Mascotas')
+                            VALUES    ('Cocina'),
+                            ('Limpieza'),
+                            ('Jardinería'),
+                            ('Electrodomésticos'),
+                            ('Costura'),
+                            ('Pintura'),
+                            ('Decoración'),
+                            ('Plomería'),
+                            ('Carpintería'),
+                            ('Estanterías'),
+                            ('Grifos'),
+                            ('Armarios'),
+                            ('Reparaciones'),
+                            ('Poda'),
+                            ('Ventanas'),
+                            ('Cortinas'),
+                            ('Muebles'),
+                            ('Cerraduras'),
+                            ('Montaje'),
+                            ('Mascotas'),
+                            ('Calefacción'),
+                            ('Albañilería'),
+                            ('Fontanería'),
+                            ('Instalaciones eléctricas'),
+                            ('Tapicería'),
+                            ('Joyería'),
+                            ('Diseño gráfico'),
+                            ('Fotografía'),
+                            ('Traducción'),
+                            ('Maquillaje'),
+                            ('Escultura'),
+                            ('Cuidado infantil'),
+                            ('Entrenamiento personal'),
+                            ('Yoga'),
+                            ('Marketing digital'),
+                            ('Desarrollo web'),
+                            ('Redes sociales'),
+                            ('Edición de video'),
+                            ('Animación 3D'),
+                            ('Investigación de mercado')
                                 ON CONFLICT DO NOTHING;`;
 
     await database.query(queryStatement);
 }
 
 
-async function createProblemsMock(){
+export async function createProblemsMock(){
     const queryStatement = `INSERT INTO problems (id, name, description, picture_name, location_id, creator_id, solver_id)
                             VALUES
                                 (1, 'Problema 1', 'Descripción del problema 1', 'picture1.jpg', 1, 2, 3),
@@ -106,5 +126,5 @@ export async function generateMockedData(){
     await createLocationsMock();
     await createUsersMock();
     await createSkillsMock();
-    await createProblemsMock();
+    //await createProblemsMock();
 }
