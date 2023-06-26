@@ -11,8 +11,8 @@ async function createLocationsMock() {
 }
 
 async function createUsersMock() {
-    const queryStatement = `INSERT INTO users (id_card_number, username, firstname, lastname, birthday, referral_code, location_id, email, hashed_password, description, id)
-                            VALUES (1234567, '', 'Admin', 'AdminJr', '2002-09-30', 1, 1, 'admin@example.com', '12345678', 'Descripción de ejemplo de admin'),
+    const queryStatement = `INSERT INTO users (id_card_number, username, firstname, lastname, birthday, referral_code, location_id, email, hashed_password, description)
+                            VALUES (1234567, 'admin', 'Admin', 'AdminJr', '2002-09-30', 1, 1, 'admin@example.com', '12345678', 'Descripción de ejemplo de admin'),
                                     (54622357, 'Pepe', 'Pandolfo', 'Petrosca', '2002-09-30', 2, 1, 'pepe@example.com', '12345678', 'Soy una persona que le gusta mucho ayudar.')
                             
                             ON CONFLICT DO NOTHING;`;

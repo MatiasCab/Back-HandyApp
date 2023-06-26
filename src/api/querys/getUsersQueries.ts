@@ -133,7 +133,6 @@ function query(onlyOne, actualUser, pageInfo?: { start: number, end: number }, u
                                 ) AS subquery
                                 WHERE id = id ${onlyOne ? '' : generateFriendFiltersInUsersQuery(filters)}`;
 
-    console.log(queryStatement);
     return {queryStatement, values: [actualUser, userRequested ? userRequested : -1]};
 }
 
